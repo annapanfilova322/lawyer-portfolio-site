@@ -39,7 +39,7 @@ const Index = () => {
       <section 
         className="relative min-h-screen flex items-center justify-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/b9d87830-562e-48a9-b1b8-2c65e79f9eaa.jpg')`,
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)), url('https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/e24f0d8c-64c3-482b-8cb7-f17dae1368f5.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
@@ -55,57 +55,63 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              <Card className="p-6 bg-white shadow-lg animate-slide-up">
-                <img 
-                  src="https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/6480ddb2-9c38-47df-98ca-770cb7c7b948.jpg"
-                  alt="Адвокат Алексей Иванов"
-                  className="w-full h-48 object-cover rounded-lg mb-4"
-                />
-                <div className="space-y-2 text-sm">
-                  <p className="flex items-center gap-2 text-muted-foreground">
-                    <Icon name="Phone" size={16} className="text-secondary" />
-                    <a href="tel:+79991234567" className="hover:text-secondary transition-colors">
-                      +7 (999) 123-45-67
-                    </a>
-                  </p>
-                  <p className="flex items-center gap-2 text-muted-foreground">
-                    <Icon name="Mail" size={16} className="text-secondary" />
-                    <a href="mailto:lawyer@example.ru" className="hover:text-secondary transition-colors">
-                      lawyer@example.ru
-                    </a>
-                  </p>
-                  <p className="flex items-center gap-2 text-muted-foreground">
-                    <Icon name="MapPin" size={16} className="text-secondary" />
-                    <span>г. Москва, ул. Тверская, д. 1</span>
-                  </p>
+            <Card className="p-8 bg-white/95 backdrop-blur-sm shadow-2xl animate-slide-up">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <img 
+                    src="https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/6480ddb2-9c38-47df-98ca-770cb7c7b948.jpg"
+                    alt="Адвокат Алексей Иванов"
+                    className="w-full h-56 object-cover rounded-lg mb-6"
+                  />
+                  <div className="space-y-3">
+                    <p className="flex items-center gap-3">
+                      <Icon name="Phone" size={18} className="text-secondary" />
+                      <a href="tel:+79991234567" className="hover:text-secondary transition-colors text-sm">
+                        +7 (999) 123-45-67
+                      </a>
+                    </p>
+                    <p className="flex items-center gap-3">
+                      <Icon name="Mail" size={18} className="text-secondary" />
+                      <a href="mailto:lawyer@example.ru" className="hover:text-secondary transition-colors text-sm">
+                        lawyer@example.ru
+                      </a>
+                    </p>
+                    <p className="flex items-center gap-3">
+                      <Icon name="MapPin" size={18} className="text-secondary" />
+                      <span className="text-sm">г. Москва, ул. Тверская, д. 1</span>
+                    </p>
+                  </div>
                 </div>
-              </Card>
 
-              <Card className="p-6 bg-white shadow-lg animate-slide-up">
-                <h2 className="text-xl font-semibold mb-4 text-primary">Специализация</h2>
-                <div className="space-y-2">
-                  {services.map((service, index) => (
-                    <div 
-                      key={index} 
-                      className="flex items-center gap-3 p-2 rounded hover:bg-muted/30 transition-colors"
-                    >
-                      <Icon name={service.icon} size={18} className="text-secondary" />
-                      <span className="text-sm text-foreground">{service.title}</span>
-                    </div>
-                  ))}
+                <div>
+                  <h2 className="text-2xl font-bold mb-6 text-primary">Специализация</h2>
+                  <div className="space-y-3">
+                    {services.map((service, index) => (
+                      <div 
+                        key={index} 
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/40 transition-colors"
+                      >
+                        <div className="flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+                            <Icon name={service.icon} size={20} className="text-secondary" />
+                          </div>
+                        </div>
+                        <span className="text-sm font-medium text-foreground">{service.title}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </Card>
-            </div>
+              </div>
 
-            <div className="text-center">
-              <Button 
-                size="lg" 
-                className="bg-secondary hover:bg-secondary/90 text-primary font-semibold"
-              >
-                Записаться на консультацию
-              </Button>
-            </div>
+              <div className="text-center mt-8">
+                <Button 
+                  size="lg" 
+                  className="bg-secondary hover:bg-secondary/90 text-primary font-semibold"
+                >
+                  Записаться на консультацию
+                </Button>
+              </div>
+            </Card>
           </div>
         </div>
 
