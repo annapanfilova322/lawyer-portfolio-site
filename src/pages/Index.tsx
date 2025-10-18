@@ -39,7 +39,7 @@ const Index = () => {
       <section 
         className="relative min-h-screen flex items-center justify-center"
         style={{
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)), url('https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/e24f0d8c-64c3-482b-8cb7-f17dae1368f5.jpg')`,
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/61fdee27-c767-4864-87bb-7019b26a262b.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
