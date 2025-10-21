@@ -42,11 +42,18 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <section 
-        className="min-h-screen flex items-center py-20 px-4 relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
+        className="min-h-screen flex items-start py-20 px-4 relative overflow-hidden"
+        style={{
+          backgroundImage: `url('https://cdn.poehali.dev/files/ed878248-9f38-401f-a46d-64af64b3c346.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
       >
-        <div className="container mx-auto max-w-7xl relative z-10">
-          <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-center">
-            <div className="space-y-6 max-w-xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-900/50 to-slate-800/70"></div>
+        <div className="container mx-auto max-w-7xl relative z-10 pt-12">
+          <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
+            <div className="space-y-6 max-w-xl pt-8">
               <div className="space-y-3">
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.05]">
                   АЛЕКСЕЙ<br />ИВАНОВ
@@ -65,19 +72,19 @@ const Index = () => {
                 </h2>
                 <div className="space-y-4 text-sm">
                   <div className="flex flex-col gap-1">
-                    <span className="text-slate-400 font-medium text-xs uppercase tracking-[0.15em]">Телефон</span>
+                    <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Телефон</span>
                     <a href="tel:+79991234567" className="hover:text-amber-400 transition-colors font-bold text-white text-xl">
                       +7 (999) 123-45-67
                     </a>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-slate-400 font-medium text-xs uppercase tracking-[0.15em]">Email</span>
+                    <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Email</span>
                     <a href="mailto:lawyer@example.ru" className="hover:text-amber-400 transition-colors font-bold text-white text-base break-all">
                       lawyer@example.ru
                     </a>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-slate-400 font-medium text-xs uppercase tracking-[0.15em]">Адрес</span>
+                    <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Адрес</span>
                     <span className="font-bold text-white text-base">г. Москва, ул. Тверская, д. 1</span>
                   </div>
                 </div>
