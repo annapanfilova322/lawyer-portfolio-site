@@ -47,7 +47,7 @@ const Index = () => {
           backgroundAttachment: 'fixed'
         }}
       >
-        <div className="absolute inset-0 bg-white/50"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-white/60 to-white/50"></div>
         <div className="container mx-auto max-w-7xl relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div className="space-y-8">
@@ -58,17 +58,17 @@ const Index = () => {
               />
             </div>
 
-            <div className="space-y-12 lg:pt-8">
+            <div className="space-y-12 lg:pt-8 bg-white/90 backdrop-blur-sm p-10 rounded-sm shadow-2xl">
               <div className="space-y-4">
-                <h1 className="text-7xl lg:text-8xl font-bold tracking-tight text-primary leading-none">
+                <h1 className="text-7xl lg:text-8xl font-bold tracking-tight text-primary leading-none drop-shadow-sm">
                   АЛЕКСЕЙ<br />ИВАНОВ
                 </h1>
-                <p className="text-2xl text-muted-foreground font-medium">
+                <p className="text-2xl text-primary/80 font-bold">
                   Адвокат
                 </p>
               </div>
 
-              <div className="h-px bg-border"></div>
+              <div className="h-px bg-primary/20"></div>
 
               <div className="space-y-4">
                 <h2 className="text-sm font-bold tracking-widest text-primary uppercase">
@@ -76,43 +76,45 @@ const Index = () => {
                 </h2>
                 <div className="space-y-3 text-lg">
                   <p className="flex items-baseline gap-3">
-                    <span className="text-muted-foreground min-w-[120px]">Телефон</span>
-                    <a href="tel:+79991234567" className="hover:text-secondary transition-colors font-medium">
+                    <span className="text-primary/60 min-w-[120px] font-semibold">Телефон</span>
+                    <a href="tel:+79991234567" className="hover:text-secondary transition-colors font-bold text-primary">
                       +7 (999) 123-45-67
                     </a>
                   </p>
                   <p className="flex items-baseline gap-3">
-                    <span className="text-muted-foreground min-w-[120px]">Email</span>
-                    <a href="mailto:lawyer@example.ru" className="hover:text-secondary transition-colors font-medium">
+                    <span className="text-primary/60 min-w-[120px] font-semibold">Email</span>
+                    <a href="mailto:lawyer@example.ru" className="hover:text-secondary transition-colors font-bold text-primary">
                       lawyer@example.ru
                     </a>
                   </p>
                   <p className="flex items-baseline gap-3">
-                    <span className="text-muted-foreground min-w-[120px]">Адрес</span>
-                    <span className="font-medium">г. Москва, ул. Тверская, д. 1</span>
+                    <span className="text-primary/60 min-w-[120px] font-semibold">Адрес</span>
+                    <span className="font-bold text-primary">г. Москва, ул. Тверская, д. 1</span>
                   </p>
                 </div>
               </div>
 
-              <div className="h-px bg-border"></div>
+              <div className="h-px bg-primary/20"></div>
 
               <div className="space-y-6">
                 <h2 className="text-sm font-bold tracking-widest text-primary uppercase">
                   Направления деятельности
                 </h2>
-                <ul className="space-y-3">
+                <div className="grid grid-cols-1 gap-3">
                   {services.map((service, index) => (
-                    <li 
+                    <div 
                       key={index} 
-                      className="flex items-center gap-4 text-lg group cursor-default"
+                      className="bg-white border-2 border-primary/10 hover:border-secondary hover:bg-secondary/5 transition-all duration-300 p-4 group"
                     >
-                      <div className="w-1 h-1 bg-secondary rounded-full group-hover:w-6 transition-all duration-300"></div>
-                      <span className="font-medium group-hover:text-secondary transition-colors">
-                        {service}
-                      </span>
-                    </li>
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-secondary group-hover:scale-150 transition-transform duration-300"></div>
+                        <span className="font-bold text-primary text-base">
+                          {service}
+                        </span>
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
               <div className="pt-4">
@@ -128,26 +130,32 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-24 px-4 bg-muted">
+      <section className="py-24 px-4 bg-gradient-to-b from-white to-muted">
         <div className="container mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-16">
             <div className="space-y-12">
               <div className="space-y-6">
-                <h2 className="text-5xl font-bold tracking-tight text-primary">
+                <h2 className="text-6xl lg:text-7xl font-bold tracking-tight text-primary">
                   ОТЗЫВЫ
                 </h2>
-                <div className="h-1 w-16 bg-secondary"></div>
+                <div className="h-2 w-24 bg-secondary"></div>
               </div>
 
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {testimonials.map((testimonial, index) => (
-                  <div key={index} className="space-y-4 border-l-2 border-border pl-6 hover:border-secondary transition-colors">
-                    <p className="text-lg leading-relaxed text-foreground">
-                      "{testimonial.text}"
+                  <div key={index} className="bg-white p-8 border-l-4 border-secondary shadow-lg hover:shadow-2xl hover:border-primary transition-all duration-300">
+                    <Icon name="Quote" size={32} className="text-secondary/20 mb-4" />
+                    <p className="text-lg leading-relaxed text-primary/90 mb-6">
+                      {testimonial.text}
                     </p>
-                    <div>
-                      <p className="font-bold text-primary">{testimonial.author}</p>
-                      <p className="text-sm text-muted-foreground">{testimonial.company}</p>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center">
+                        <Icon name="User" size={20} className="text-secondary" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-primary text-lg">{testimonial.author}</p>
+                        <p className="text-sm text-secondary font-medium">{testimonial.company}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -156,19 +164,19 @@ const Index = () => {
 
             <div className="space-y-12">
               <div className="space-y-6">
-                <h2 className="text-5xl font-bold tracking-tight text-primary">
+                <h2 className="text-6xl lg:text-7xl font-bold tracking-tight text-primary">
                   МЫ СОТРУДНИЧАЕМ
                 </h2>
-                <div className="h-1 w-16 bg-secondary"></div>
+                <div className="h-2 w-24 bg-secondary"></div>
               </div>
 
-              <div className="grid grid-cols-2 gap-8">
+              <div className="grid grid-cols-2 gap-6">
                 {partners.map((partner, index) => (
                   <div 
                     key={index} 
-                    className="aspect-[3/2] flex items-center justify-center border-2 border-border hover:border-secondary transition-all duration-300 bg-white"
+                    className="aspect-[3/2] flex items-center justify-center border-2 border-primary/20 hover:border-secondary hover:bg-white transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-md hover:shadow-xl group"
                   >
-                    <span className="text-2xl font-bold text-primary/20 hover:text-primary/40 transition-colors">
+                    <span className="text-2xl font-bold text-primary/30 group-hover:text-secondary group-hover:scale-110 transition-all duration-300">
                       {partner}
                     </span>
                   </div>
