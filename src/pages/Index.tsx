@@ -174,8 +174,8 @@ const Index = () => {
 
             <div className="space-y-10">
               <div className="space-y-4">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-primary break-words leading-tight">
-                  МЫ<br/>СОТРУДНИЧАЕМ
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-primary leading-tight">
+                  ПАРТНЁРЫ
                 </h2>
                 <div className="h-1 w-20 bg-secondary"></div>
               </div>
@@ -184,10 +184,10 @@ const Index = () => {
                 {partners.map((partner, index) => (
                   <div 
                     key={index} 
-                    className="aspect-[3/2] flex items-center justify-center border border-primary/10 hover:border-secondary transition-all duration-500 bg-white shadow-sm hover:shadow-xl group relative overflow-hidden"
+                    className="aspect-[3/2] flex items-center justify-center border-2 border-primary/10 hover:border-secondary transition-all duration-500 bg-white shadow-md hover:shadow-2xl group relative overflow-hidden"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/0 to-secondary/0 group-hover:from-secondary/5 group-hover:to-secondary/10 transition-all duration-500"></div>
-                    <span className="text-xl md:text-2xl font-bold text-primary/25 group-hover:text-secondary/70 transition-all duration-500 group-hover:scale-105 relative z-10">
+                    <div className="absolute inset-0 bg-gradient-to-br from-transparent to-transparent group-hover:from-secondary/5 group-hover:to-secondary/10 transition-all duration-500"></div>
+                    <span className="text-xl md:text-2xl lg:text-3xl font-bold text-primary/30 group-hover:text-secondary/80 transition-all duration-500 group-hover:scale-110 relative z-10">
                       {partner}
                     </span>
                   </div>
