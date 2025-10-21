@@ -42,68 +42,61 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white">
       <section 
-        className="min-h-screen flex items-center py-20 px-4 relative overflow-hidden"
-        style={{
-          backgroundImage: `url('https://cdn.poehali.dev/files/665c98ba-84cd-44b9-a455-f288a757890d.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed'
-        }}
+        className="min-h-screen flex items-center py-20 px-4 relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
       >
-        <div className="absolute inset-0 bg-black/30"></div>
         <div className="container mx-auto max-w-7xl relative z-10">
-          <div className="grid lg:grid-cols-[1fr,400px] gap-12 xl:gap-16 items-center">
-            <div className="space-y-6 bg-white/95 backdrop-blur-sm p-8 md:p-10 shadow-xl border-l-4 border-secondary max-w-lg">
-              <div className="space-y-2">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-primary leading-tight">
-                  АЛЕКСЕЙ ИВАНОВ
+          <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-center">
+            <div className="space-y-6 max-w-xl">
+              <div className="space-y-3">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.05]">
+                  АЛЕКСЕЙ<br />ИВАНОВ
                 </h1>
-                <div className="flex items-center gap-3">
-                  <div className="h-0.5 w-8 bg-secondary"></div>
-                  <p className="text-lg md:text-xl text-primary/70 font-medium">
+                <div className="flex items-center gap-4 pt-1">
+                  <div className="h-0.5 w-16 bg-amber-400"></div>
+                  <p className="text-xl md:text-2xl text-amber-400 font-light tracking-[0.2em] uppercase">
                     Адвокат
                   </p>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <h2 className="text-xs font-bold tracking-[0.15em] text-primary uppercase">
+              <div className="space-y-5 pt-4">
+                <h2 className="text-xs font-bold tracking-[0.25em] text-amber-400/80 uppercase">
                   Контакты
                 </h2>
-                <div className="space-y-3 text-sm">
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-primary/60 font-semibold text-xs uppercase tracking-wider">Телефон</span>
-                    <a href="tel:+79991234567" className="hover:text-secondary transition-colors font-bold text-primary text-lg">
+                <div className="space-y-4 text-sm">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-slate-400 font-medium text-xs uppercase tracking-[0.15em]">Телефон</span>
+                    <a href="tel:+79991234567" className="hover:text-amber-400 transition-colors font-bold text-white text-xl">
                       +7 (999) 123-45-67
                     </a>
                   </div>
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-primary/60 font-semibold text-xs uppercase tracking-wider">Email</span>
-                    <a href="mailto:lawyer@example.ru" className="hover:text-secondary transition-colors font-bold text-primary text-base break-all">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-slate-400 font-medium text-xs uppercase tracking-[0.15em]">Email</span>
+                    <a href="mailto:lawyer@example.ru" className="hover:text-amber-400 transition-colors font-bold text-white text-base break-all">
                       lawyer@example.ru
                     </a>
                   </div>
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-primary/60 font-semibold text-xs uppercase tracking-wider">Адрес</span>
-                    <span className="font-bold text-primary text-base">г. Москва, ул. Тверская, д. 1</span>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-slate-400 font-medium text-xs uppercase tracking-[0.15em]">Адрес</span>
+                    <span className="font-bold text-white text-base">г. Москва, ул. Тверская, д. 1</span>
                   </div>
                 </div>
               </div>
 
-              <div className="h-px bg-gradient-to-r from-secondary/40 via-primary/10 to-transparent"></div>
+              <div className="h-px bg-gradient-to-r from-amber-400/50 via-amber-400/20 to-transparent my-6"></div>
 
-              <div className="space-y-3">
-                <h2 className="text-xs font-bold tracking-[0.15em] text-primary uppercase">
+              <div className="space-y-4">
+                <h2 className="text-xs font-bold tracking-[0.25em] text-amber-400/80 uppercase">
                   Направления деятельности
                 </h2>
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {services.map((service, index) => (
                     <div 
                       key={index} 
-                      className="flex items-center gap-3 group cursor-default py-1.5 border-l-2 border-transparent hover:border-secondary transition-all pl-3"
+                      className="flex items-center gap-3 group cursor-default py-2 border-l-2 border-transparent hover:border-amber-400 transition-all pl-4"
                     >
-                      <div className="w-1 h-1 bg-secondary/70 group-hover:bg-secondary group-hover:scale-125 transition-all flex-shrink-0"></div>
-                      <span className="font-semibold text-primary/80 group-hover:text-secondary transition-colors text-sm">
+                      <div className="w-1.5 h-1.5 bg-amber-400/60 group-hover:bg-amber-400 group-hover:scale-125 transition-all flex-shrink-0"></div>
+                      <span className="font-medium text-slate-200 group-hover:text-white transition-colors text-base">
                         {service}
                       </span>
                     </div>
@@ -111,23 +104,23 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="pt-4">
+              <div className="pt-6">
                 <Button 
                   onClick={() => setShowContactModal(true)}
                   size="lg" 
-                  className="w-full bg-primary hover:bg-secondary text-white font-bold px-8 py-5 text-xs tracking-widest uppercase h-auto transition-all shadow-lg hover:shadow-xl"
+                  className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-10 py-6 text-xs tracking-[0.2em] uppercase h-auto transition-all shadow-xl hover:shadow-2xl hover:shadow-amber-500/20"
                 >
                   Записаться на консультацию
                 </Button>
               </div>
             </div>
 
-            <div className="space-y-4 lg:justify-self-end">
-              <div className="relative overflow-hidden shadow-2xl">
+            <div className="lg:justify-self-end">
+              <div className="relative overflow-hidden shadow-2xl shadow-black/50 border-2 border-amber-400/20">
                 <img 
                   src="https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/96b8d9c2-7ecd-40df-b089-2bd12fc3698b.jpg"
                   alt="Адвокат Алексей Иванов"
-                  className="w-full aspect-[3/4] object-cover"
+                  className="w-full aspect-[2/3] object-cover"
                 />
               </div>
             </div>
