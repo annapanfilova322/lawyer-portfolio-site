@@ -38,8 +38,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <section className="min-h-screen flex items-center py-20 px-4">
-        <div className="container mx-auto max-w-7xl">
+      <section 
+        className="min-h-screen flex items-center py-20 px-4 relative"
+        style={{
+          backgroundImage: `url('https://cdn.poehali.dev/files/9300e63c-58c3-4783-8745-c9279f14edf3.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        <div className="absolute inset-0 bg-white/75"></div>
+        <div className="container mx-auto max-w-7xl relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-start">
             <div className="space-y-8">
               <img 
