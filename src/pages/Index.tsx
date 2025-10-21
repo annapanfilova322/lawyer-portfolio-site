@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import { useState } from "react";
 
 const Index = () => {
+  const [showContactModal, setShowContactModal] = useState(false);
+
   const services = [
     "Уголовное право",
     "Гражданское право",
@@ -74,25 +77,25 @@ const Index = () => {
               </div>
 
               <div className="space-y-5">
-                <h2 className="text-xs font-bold tracking-[0.2em] text-primary/60 uppercase">
+                <h2 className="text-xs font-bold tracking-[0.2em] text-primary uppercase">
                   Контакты
                 </h2>
-                <div className="space-y-4 text-base">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                    <span className="text-primary/50 text-sm font-medium uppercase tracking-wider min-w-[100px]">Телефон</span>
-                    <a href="tel:+79991234567" className="hover:text-secondary transition-colors font-semibold text-primary text-lg">
+                <div className="space-y-5 text-base">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-primary font-bold text-xs uppercase tracking-widest">Телефон</span>
+                    <a href="tel:+79991234567" className="hover:text-secondary transition-colors font-bold text-primary text-xl">
                       +7 (999) 123-45-67
                     </a>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                    <span className="text-primary/50 text-sm font-medium uppercase tracking-wider min-w-[100px]">Email</span>
-                    <a href="mailto:lawyer@example.ru" className="hover:text-secondary transition-colors font-semibold text-primary break-all">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-primary font-bold text-xs uppercase tracking-widest">Email</span>
+                    <a href="mailto:lawyer@example.ru" className="hover:text-secondary transition-colors font-bold text-primary text-lg break-all">
                       lawyer@example.ru
                     </a>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
-                    <span className="text-primary/50 text-sm font-medium uppercase tracking-wider min-w-[100px]">Адрес</span>
-                    <span className="font-semibold text-primary">г. Москва, ул. Тверская, д. 1</span>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-primary font-bold text-xs uppercase tracking-widest">Адрес</span>
+                    <span className="font-bold text-primary text-lg">г. Москва, ул. Тверская, д. 1</span>
                   </div>
                 </div>
               </div>
@@ -100,7 +103,7 @@ const Index = () => {
               <div className="h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
 
               <div className="space-y-5">
-                <h2 className="text-xs font-bold tracking-[0.2em] text-primary/60 uppercase">
+                <h2 className="text-xs font-bold tracking-[0.2em] text-primary uppercase">
                   Направления деятельности
                 </h2>
                 <div className="space-y-3">
@@ -120,6 +123,7 @@ const Index = () => {
 
               <div className="pt-6">
                 <Button 
+                  onClick={() => setShowContactModal(true)}
                   size="lg" 
                   className="w-full sm:w-auto bg-primary hover:bg-secondary text-white font-bold px-10 py-6 text-sm tracking-widest uppercase h-auto transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
@@ -136,7 +140,7 @@ const Index = () => {
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-20">
             <div className="space-y-10">
               <div className="space-y-4">
-                <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-primary">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-primary break-words">
                   ОТЗЫВЫ
                 </h2>
                 <div className="h-1 w-20 bg-secondary"></div>
@@ -170,7 +174,7 @@ const Index = () => {
 
             <div className="space-y-10">
               <div className="space-y-4">
-                <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-primary">
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-primary break-words leading-tight">
                   МЫ<br/>СОТРУДНИЧАЕМ
                 </h2>
                 <div className="h-1 w-20 bg-secondary"></div>
@@ -219,6 +223,68 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {showContactModal && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowContactModal(false)}
+        >
+          <div 
+            className="bg-white max-w-md w-full p-8 md:p-12 shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setShowContactModal(false)}
+              className="absolute top-4 right-4 text-primary/40 hover:text-primary transition-colors"
+            >
+              <Icon name="X" size={24} />
+            </button>
+            
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-3xl font-bold text-primary">
+                  ЗАПИСАТЬСЯ НА КОНСУЛЬТАЦИЮ
+                </h3>
+                <div className="h-1 w-16 bg-secondary"></div>
+              </div>
+              
+              <div className="space-y-6 pt-4">
+                <div className="space-y-2">
+                  <p className="text-xs font-bold tracking-widest text-primary/60 uppercase">
+                    Позвоните нам
+                  </p>
+                  <a 
+                    href="tel:+79991234567" 
+                    className="block text-3xl font-bold text-secondary hover:text-primary transition-colors"
+                  >
+                    +7 (999) 123-45-67
+                  </a>
+                </div>
+
+                <div className="h-px bg-primary/10"></div>
+
+                <div className="space-y-2">
+                  <p className="text-xs font-bold tracking-widest text-primary/60 uppercase">
+                    Или напишите
+                  </p>
+                  <a 
+                    href="mailto:lawyer@example.ru" 
+                    className="block text-lg font-bold text-secondary hover:text-primary transition-colors break-all"
+                  >
+                    lawyer@example.ru
+                  </a>
+                </div>
+
+                <div className="pt-4">
+                  <p className="text-sm text-primary/60 leading-relaxed">
+                    Мы ответим в течение 15 минут в рабочее время
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
