@@ -1,182 +1,198 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import Icon from "@/components/ui/icon";
 
 const Index = () => {
   const services = [
-    { icon: "Scale", title: "Гражданское право" },
-    { icon: "Building", title: "Корпоративное право" },
-    { icon: "FileText", title: "Договорное право" },
-    { icon: "Briefcase", title: "Арбитраж" }
+    "Уголовное право",
+    "Гражданское право",
+    "Недвижимость и сделки",
+    "Корпоративные споры"
   ];
 
   const testimonials = [
     {
-      text: "Профессиональный подход и внимание к деталям.",
+      text: "Профессиональный подход к делу. Алексей помог выиграть сложный корпоративный спор.",
       author: "Анна Петрова",
-      company: "ООО 'Техносервис'"
+      company: "Генеральный директор"
     },
     {
-      text: "Отличное знание законодательства и оперативность.",
+      text: "Рекомендую как надёжного специалиста. Всё чётко, быстро и по делу.",
       author: "Михаил Сидоров",
-      company: "АО 'Строймонтаж'"
+      company: "Предприниматель"
     },
     {
-      text: "Помог решить запутанный корпоративный спор.",
+      text: "Благодарен за помощь в сделке с недвижимостью. Всё прошло без единой проблемы.",
       author: "Елена Кузнецова",
-      company: "ИП Кузнецова Е.В."
+      company: "Частный клиент"
     }
   ];
 
   const partners = [
-    { name: "ООО 'Техносервис'" },
-    { name: "АО 'Строймонтаж'" },
-    { name: "ИП Кузнецова Е.В." }
+    "СБЕР",
+    "ГАЗПРОМ",
+    "РОСАТОМ",
+    "РЖД",
+    "ЛУКОЙЛ",
+    "ВТБ"
   ];
 
   return (
-    <div className="min-h-screen">
-      <section 
-        className="relative min-h-screen flex items-center justify-center"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/61fdee27-c767-4864-87bb-7019b26a262b.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}
-      >
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12 animate-fade-in">
-              <h1 className="text-4xl md:text-5xl font-bold mb-3 text-primary">
-                Алексей Иванов
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                Адвокат с 15-летним опытом
-              </p>
+    <div className="min-h-screen bg-white">
+      <section className="min-h-screen flex items-center py-20 px-4">
+        <div className="container mx-auto max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            <div className="space-y-8">
+              <img 
+                src="https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/96b8d9c2-7ecd-40df-b089-2bd12fc3698b.jpg"
+                alt="Адвокат Алексей Иванов"
+                className="w-full aspect-[4/5] object-cover"
+              />
             </div>
 
-            <Card className="p-8 bg-white/95 backdrop-blur-sm shadow-2xl animate-slide-up">
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <img 
-                    src="https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/6480ddb2-9c38-47df-98ca-770cb7c7b948.jpg"
-                    alt="Адвокат Алексей Иванов"
-                    className="w-full h-56 object-cover rounded-lg mb-6"
-                  />
-                  <div className="space-y-3">
-                    <p className="flex items-center gap-3">
-                      <Icon name="Phone" size={18} className="text-secondary" />
-                      <a href="tel:+79991234567" className="hover:text-secondary transition-colors text-sm">
-                        +7 (999) 123-45-67
-                      </a>
-                    </p>
-                    <p className="flex items-center gap-3">
-                      <Icon name="Mail" size={18} className="text-secondary" />
-                      <a href="mailto:lawyer@example.ru" className="hover:text-secondary transition-colors text-sm">
-                        lawyer@example.ru
-                      </a>
-                    </p>
-                    <p className="flex items-center gap-3">
-                      <Icon name="MapPin" size={18} className="text-secondary" />
-                      <span className="text-sm">г. Москва, ул. Тверская, д. 1</span>
-                    </p>
-                  </div>
-                </div>
+            <div className="space-y-12 lg:pt-8">
+              <div className="space-y-4">
+                <h1 className="text-7xl lg:text-8xl font-bold tracking-tight text-primary leading-none">
+                  АЛЕКСЕЙ<br />ИВАНОВ
+                </h1>
+                <p className="text-2xl text-muted-foreground font-medium">
+                  Адвокат
+                </p>
+              </div>
 
-                <div>
-                  <h2 className="text-2xl font-bold mb-6 text-primary">Специализация</h2>
-                  <div className="space-y-3">
-                    {services.map((service, index) => (
-                      <div 
-                        key={index} 
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/40 transition-colors"
-                      >
-                        <div className="flex-shrink-0">
-                          <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
-                            <Icon name={service.icon} size={20} className="text-secondary" />
-                          </div>
-                        </div>
-                        <span className="text-sm font-medium text-foreground">{service.title}</span>
-                      </div>
-                    ))}
-                  </div>
+              <div className="h-px bg-border"></div>
+
+              <div className="space-y-4">
+                <h2 className="text-sm font-bold tracking-widest text-primary uppercase">
+                  Контакты
+                </h2>
+                <div className="space-y-3 text-lg">
+                  <p className="flex items-baseline gap-3">
+                    <span className="text-muted-foreground min-w-[120px]">Телефон</span>
+                    <a href="tel:+79991234567" className="hover:text-secondary transition-colors font-medium">
+                      +7 (999) 123-45-67
+                    </a>
+                  </p>
+                  <p className="flex items-baseline gap-3">
+                    <span className="text-muted-foreground min-w-[120px]">Email</span>
+                    <a href="mailto:lawyer@example.ru" className="hover:text-secondary transition-colors font-medium">
+                      lawyer@example.ru
+                    </a>
+                  </p>
+                  <p className="flex items-baseline gap-3">
+                    <span className="text-muted-foreground min-w-[120px]">Адрес</span>
+                    <span className="font-medium">г. Москва, ул. Тверская, д. 1</span>
+                  </p>
                 </div>
               </div>
 
-              <div className="text-center mt-8">
+              <div className="h-px bg-border"></div>
+
+              <div className="space-y-6">
+                <h2 className="text-sm font-bold tracking-widest text-primary uppercase">
+                  Направления деятельности
+                </h2>
+                <ul className="space-y-3">
+                  {services.map((service, index) => (
+                    <li 
+                      key={index} 
+                      className="flex items-center gap-4 text-lg group cursor-default"
+                    >
+                      <div className="w-1 h-1 bg-secondary rounded-full group-hover:w-6 transition-all duration-300"></div>
+                      <span className="font-medium group-hover:text-secondary transition-colors">
+                        {service}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="pt-4">
                 <Button 
                   size="lg" 
-                  className="bg-secondary hover:bg-secondary/90 text-primary font-semibold"
+                  className="bg-primary hover:bg-primary/90 text-white font-bold px-12 py-6 text-base h-auto"
                 >
-                  Записаться на консультацию
+                  ЗАПИСАТЬСЯ НА КОНСУЛЬТАЦИЮ
                 </Button>
               </div>
-            </Card>
-          </div>
-        </div>
-
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <Icon name="ChevronDown" size={24} className="text-muted-foreground/50" />
-        </div>
-      </section>
-
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <h2 className="text-3xl font-bold text-center mb-2 text-primary">
-            Отзывы клиентов
-          </h2>
-          <p className="text-center text-muted-foreground mb-10 text-sm">
-            Доверие и результат
-          </p>
-
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {testimonials.map((testimonial, index) => (
-              <Card 
-                key={index} 
-                className="p-4 hover:shadow-lg transition-all duration-300 bg-background"
-              >
-                <Icon name="Quote" size={20} className="text-secondary mb-2" />
-                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                  {testimonial.text}
-                </p>
-                <div className="border-t pt-3">
-                  <p className="font-medium text-sm text-primary">{testimonial.author}</p>
-                  <p className="text-xs text-secondary">{testimonial.company}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <h3 className="text-2xl font-semibold mb-6 text-primary">Мы сотрудничаем</h3>
-            <div className="flex flex-wrap justify-center items-center gap-8">
-              {partners.map((partner, index) => (
-                <div 
-                  key={index} 
-                  className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100"
-                >
-                  <div className="w-32 h-16 bg-white rounded shadow flex items-center justify-center p-4 border border-border">
-                    <img 
-                      src="https://cdn.poehali.dev/projects/d51f7b1a-8a54-4ed4-af0f-610043ace193/files/fcafe6e4-90c4-4175-9f3c-efd55ad0d2ce.jpg"
-                      alt={partner.name}
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="bg-primary text-white py-6">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-xs">
-            © 2024 Адвокат Алексей Иванов
-          </p>
-          <p className="text-xs text-white/60 mt-1">
-            Лицензия адвоката № 77/123456
-          </p>
+      <section className="py-24 px-4 bg-muted">
+        <div className="container mx-auto max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-16">
+            <div className="space-y-12">
+              <div className="space-y-6">
+                <h2 className="text-5xl font-bold tracking-tight text-primary">
+                  ОТЗЫВЫ
+                </h2>
+                <div className="h-1 w-16 bg-secondary"></div>
+              </div>
+
+              <div className="space-y-8">
+                {testimonials.map((testimonial, index) => (
+                  <div key={index} className="space-y-4 border-l-2 border-border pl-6 hover:border-secondary transition-colors">
+                    <p className="text-lg leading-relaxed text-foreground">
+                      "{testimonial.text}"
+                    </p>
+                    <div>
+                      <p className="font-bold text-primary">{testimonial.author}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.company}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-12">
+              <div className="space-y-6">
+                <h2 className="text-5xl font-bold tracking-tight text-primary">
+                  МЫ СОТРУДНИЧАЕМ
+                </h2>
+                <div className="h-1 w-16 bg-secondary"></div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-8">
+                {partners.map((partner, index) => (
+                  <div 
+                    key={index} 
+                    className="aspect-[3/2] flex items-center justify-center border-2 border-border hover:border-secondary transition-all duration-300 bg-white"
+                  >
+                    <span className="text-2xl font-bold text-primary/20 hover:text-primary/40 transition-colors">
+                      {partner}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="bg-primary text-white py-12 px-4">
+        <div className="container mx-auto max-w-7xl">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+              <p className="text-sm font-medium">
+                © 2024 АЛЕКСЕЙ ИВАНОВ
+              </p>
+              <p className="text-sm text-white/60 mt-1">
+                Лицензия адвоката № 77/123456
+              </p>
+            </div>
+            <div className="flex gap-6">
+              <a href="#" className="hover:text-secondary transition-colors">
+                <Icon name="Linkedin" size={20} />
+              </a>
+              <a href="#" className="hover:text-secondary transition-colors">
+                <Icon name="Mail" size={20} />
+              </a>
+              <a href="#" className="hover:text-secondary transition-colors">
+                <Icon name="Phone" size={20} />
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
