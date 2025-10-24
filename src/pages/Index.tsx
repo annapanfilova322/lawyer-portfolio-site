@@ -42,7 +42,7 @@ const Index = () => {
       <section 
         className="min-h-screen flex items-start py-20 px-4 relative overflow-hidden"
         style={{
-          backgroundImage: `url('https://cdn.poehali.dev/files/ed878248-9f38-401f-a46d-64af64b3c346.jpg')`,
+          backgroundImage: `url('https://cdn.poehali.dev/files/7a571db1-b302-4ba8-af75-801353092c60.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundAttachment: 'fixed'
@@ -53,8 +53,8 @@ const Index = () => {
           <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
               <div className="space-y-4">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.05]">
-                  АЛЕКСЕЙ ИВАНОВ
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.05]" style={{ fontFamily: "'Miama Nueva', cursive" }}>
+                  Панфилова Анна
                 </h1>
                 <div className="flex items-center gap-4 pt-1">
                   <div className="h-0.5 w-16 bg-amber-400"></div>
@@ -184,7 +184,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
             <div className="space-y-2">
               <p className="text-sm font-bold tracking-widest uppercase">
-                © 2024 АЛЕКСЕЙ ИВАНОВ
+                © 2024 Панфилова Анна
               </p>
               <p className="text-xs text-white/60 font-medium">
                 Лицензия адвоката № 77/123456
