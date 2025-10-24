@@ -53,7 +53,7 @@ const Index = () => {
           <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
               <div className="space-y-4">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.05]" style={{ fontFamily: "'Miama Nueva', cursive" }}>
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.4]" style={{ fontFamily: "'Miama Nueva', cursive", color: '#fbbf24', textShadow: '2px 2px 8px rgba(0,0,0,0.3)' }}>
                   Панфилова Анна
                 </h1>
                 <div className="flex items-center gap-4 pt-1">
