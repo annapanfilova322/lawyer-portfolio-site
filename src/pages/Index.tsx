@@ -54,7 +54,7 @@ const Index = () => {
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
               <div className="space-y-4">
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.4] flex flex-wrap items-baseline gap-4" style={{ fontFamily: "'Miama Nueva', cursive", color: '#fbbf24', textShadow: '2px 2px 8px rgba(0,0,0,0.3)' }}>
-                  <span>Панфилова</span>
+                  <span className="relative -top-3">Панфилова</span>
                   <span>Анна</span>
                 </h1>
                 <div className="flex items-center gap-4 pt-1">
