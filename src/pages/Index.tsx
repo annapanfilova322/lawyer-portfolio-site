@@ -63,7 +63,7 @@ const Index = () => {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/70 via-slate-900/50 to-slate-800/70"></div>
-        <div className="container mx-auto max-w-7xl relative z-10 pt-12">
+        <div className="container mx-auto max-w-7xl relative z-10 pt-4">
           <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
               <div className="space-y-6">
