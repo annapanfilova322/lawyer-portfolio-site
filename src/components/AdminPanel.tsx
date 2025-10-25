@@ -49,12 +49,7 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordResetError, setPasswordResetError] = useState("");
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('admin_token');
-    if (storedToken) {
-      verifyToken(storedToken);
-    }
-  }, []);
+
 
   useEffect(() => {
     const handleOpenAdmin = () => {
@@ -104,7 +99,6 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
         setAuthToken(data.token);
         setIsAuthenticated(true);
         setPassword("");
-        localStorage.setItem('admin_token', data.token);
       } else if (response.status === 429) {
         setLoginError(`Слишком много попыток. Повторите через ${Math.ceil(data.retry_after / 60)} минут.`);
       } else {
@@ -195,6 +189,7 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
     setIsAuthenticated(false);
     setAuthToken(null);
     setShowAddForm(false);
+    setShowContactsEdit(false);
     setIsOpen(false);
     localStorage.removeItem('admin_token');
   };
