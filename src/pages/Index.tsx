@@ -122,7 +122,7 @@ const Index = () => {
                 <div className="grid sm:grid-cols-3 gap-6 lg:gap-20">
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Телефон</span>
-                    <span className="font-bold text-white text-lg">
+                    <span className="font-bold text-white text-lg whitespace-nowrap">
                       {contacts.phone}
                     </span>
                   </div>
@@ -134,7 +134,7 @@ const Index = () => {
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Адрес</span>
-                    <span className="font-bold text-white text-base">{contacts.address}</span>
+                    <span className="font-bold text-white text-base whitespace-nowrap">{contacts.address}</span>
                   </div>
                 </div>
               </div>
