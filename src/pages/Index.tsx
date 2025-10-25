@@ -3,6 +3,7 @@ import Icon from "@/components/ui/icon";
 import { useState, useEffect } from "react";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 import AdminPanel from "@/components/AdminPanel";
+import MobileViewToggle from "@/components/MobileViewToggle";
 
 const Index = () => {
   const [showContactModal, setShowContactModal] = useState(false);
@@ -51,6 +52,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <MobileViewToggle />
       <section 
         className="min-h-screen flex items-start py-20 px-4 relative overflow-hidden"
         style={{
@@ -65,48 +67,48 @@ const Index = () => {
           <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
               <div className="space-y-6">
-                <h1 className="text-xl md:text-2xl text-amber-400 font-light tracking-wide uppercase">
+                <h1 className="text-xl md:text-2xl text-mint font-light tracking-wide uppercase">
                   Адвокат
                 </h1>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight whitespace-nowrap" style={{ fontFamily: "'Miama Nueva', cursive", color: '#fbbf24' }}>
-                  Панфилова Анна <span className="text-3xl md:text-4xl lg:text-5xl">& Co</span>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight" style={{ fontFamily: "'Miama Nueva', cursive", color: '#c0f0e0' }}>
+                  Панфилова Анна <span className="text-2xl md:text-3xl lg:text-4xl">& Co</span>
                 </h2>
               </div>
 
               <div className="space-y-6">
-                <p className="text-base md:text-lg text-amber-400">
+                <p className="text-base md:text-lg text-mint">
                   Налоги, экономика, бизнес
                 </p>
 
-                <p className="text-base md:text-lg text-amber-400">
+                <p className="text-base md:text-lg text-mint">
                   Член адвокатской палаты г. Санкт-Петербурга с 2013 года.
                 </p>
 
                 <div className="space-y-6">
                   {expertise.map((item, index) => (
-                    <p key={index} className="text-base md:text-lg text-amber-400">
+                    <p key={index} className="text-base md:text-lg text-mint">
                       {item.title}
                     </p>
                   ))}
                 </div>
               </div>
 
-              <div className="h-px bg-gradient-to-r from-amber-400/50 via-amber-400/20 to-transparent my-8"></div>
+              <div className="h-px bg-gradient-to-r from-mint/50 via-mint/20 to-transparent my-8"></div>
 
               <div className="space-y-5">
-                <h2 className="text-lg font-bold tracking-[0.2em] text-amber-400/80 uppercase">
+                <h2 className="text-lg font-bold tracking-[0.2em] text-mint/80 uppercase">
                   Контакты
                 </h2>
                 <div className="grid sm:grid-cols-3 gap-6">
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Телефон</span>
-                    <a href="tel:+79991234567" className="hover:text-amber-400 transition-colors font-bold text-white text-lg">
+                    <a href="tel:+79991234567" className="hover:text-mint transition-colors font-bold text-white text-lg">
                       +7 (999) 123-45-67
                     </a>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Email</span>
-                    <a href="mailto:lawyer@example.ru" className="hover:text-amber-400 transition-colors font-bold text-white text-base break-all">
+                    <a href="mailto:lawyer@example.ru" className="hover:text-mint transition-colors font-bold text-white text-base break-all">
                       lawyer@example.ru
                     </a>
                   </div>

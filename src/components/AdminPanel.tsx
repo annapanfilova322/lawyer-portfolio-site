@@ -184,14 +184,14 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
                           type="text"
                           value={testimonial.company}
                           onChange={(e) => handleFieldChange(index, "company", e.target.value)}
-                          className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
+                          className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
                           placeholder="Название компании"
                         />
                         <input
                           type="text"
                           value={testimonial.letterUrl}
                           onChange={(e) => handleFieldChange(index, "letterUrl", e.target.value)}
-                          className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
+                          className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
                           placeholder="Ссылка на файл"
                         />
                         <div className="flex gap-2">
