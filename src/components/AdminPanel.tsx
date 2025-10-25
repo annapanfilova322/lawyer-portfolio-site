@@ -207,8 +207,21 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
                       <>
                         <div>
                           <p className="font-semibold text-slate-900">{testimonial.company}</p>
-                          {testimonial.letterUrl && (
-                            <p className="text-xs text-slate-500 mt-1 break-all">Файл прикреплен</p>
+                          {testimonial.letterUrl ? (
+                            <a 
+                              href={testimonial.letterUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="inline-block mt-2"
+                            >
+                              <button className="px-4 py-2 bg-mint text-slate-900 text-xs font-semibold rounded-md hover:bg-mint/90 transition-colors shadow-sm">
+                                Открыть отзыв
+                              </button>
+                            </a>
+                          ) : (
+                            <button className="px-4 py-2 bg-mint text-slate-900 text-xs font-semibold rounded-md hover:bg-mint/90 transition-colors shadow-sm mt-2">
+                              Открыть отзыв
+                            </button>
                           )}
                         </div>
                         <div className="flex gap-2">
