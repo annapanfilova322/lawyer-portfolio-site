@@ -58,9 +58,8 @@ const Index = () => {
                 <h1 className="text-xl md:text-2xl text-amber-400 font-light tracking-wide uppercase">
                   Адвокат
                 </h1>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight flex flex-wrap items-baseline gap-3" style={{ fontFamily: "'Miama Nueva', cursive", color: '#fbbf24' }}>
-                  <span>Панфилова Анна</span>
-                  <span className="text-3xl md:text-4xl lg:text-5xl">& Co</span>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight whitespace-nowrap" style={{ fontFamily: "'Miama Nueva', cursive", color: '#fbbf24' }}>
+                  Панфилова Анна <span className="text-3xl md:text-4xl lg:text-5xl">& Co</span>
                 </h2>
               </div>
 
