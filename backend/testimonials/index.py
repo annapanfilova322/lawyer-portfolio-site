@@ -70,9 +70,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'isBase64Encoded': False
                 }
             
+            cur.execute("SELECT COALESCE(MAX(sort_order), -1) + 1 FROM testimonials")
+            next_order = cur.fetchone()[0]
+            
             cur.execute(
-                "INSERT INTO testimonials (company, letter_url) VALUES (%s, %s) RETURNING id",
-                (company, letter_url)
+                "INSERT INTO testimonials (company, letter_url, sort_order) VALUES (%s, %s, %s) RETURNING id",
+                (company, letter_url, next_order)
             )
             new_id = cur.fetchone()[0]
             conn.commit()
