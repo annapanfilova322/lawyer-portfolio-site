@@ -16,10 +16,11 @@ const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [newTestimonial, setNewTestimonial] = useState({ company: "", letterUrl: "" });
+  const [newTestimonial, setNewTestimonial] = useState({ company: "", letterUrl: "", file: null as File | null });
 
-  const ADMIN_PASSWORD = "admin123";
+  const ADMIN_PASSWORD = "panfilova2025";
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
@@ -30,18 +31,35 @@ const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
     }
   };
 
-  const handleAddTestimonial = () => {
-    if (newTestimonial.company.trim()) {
-      onUpdate([...testimonials, newTestimonial]);
-      setNewTestimonial({ company: "", letterUrl: "" });
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setNewTestimonial({ ...newTestimonial, file });
+      const fileUrl = URL.createObjectURL(file);
+      setNewTestimonial(prev => ({ ...prev, file, letterUrl: fileUrl }));
     }
   };
 
-  const handleEditTestimonial = (index: number) => {
-    if (editingIndex === index) {
-      setEditingIndex(null);
+  const handlePublishTestimonial = () => {
+    if (newTestimonial.company.trim()) {
+      onUpdate([...testimonials, { company: newTestimonial.company, letterUrl: newTestimonial.letterUrl }]);
+      setNewTestimonial({ company: "", letterUrl: "", file: null });
+      setShowAddForm(false);
     } else {
-      setEditingIndex(index);
+      alert("Пожалуйста, заполните название компании");
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setShowAddForm(false);
+    setIsOpen(false);
+  };
+
+  const handleDeleteTestimonial = (index: number) => {
+    if (confirm("Вы уверены, что хотите удалить этот отзыв?")) {
+      const updated = testimonials.filter((_, i) => i !== index);
+      onUpdate(updated);
     }
   };
 
@@ -49,13 +67,6 @@ const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
     const updated = [...testimonials];
     updated[index] = { ...updated[index], [field]: value };
     onUpdate(updated);
-  };
-
-  const handleDeleteTestimonial = (index: number) => {
-    if (confirm("Удалить этот отзыв?")) {
-      const updated = testimonials.filter((_, i) => i !== index);
-      onUpdate(updated);
-    }
   };
 
   if (!isOpen) {
@@ -76,10 +87,7 @@ const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-slate-900">Панель администратора</h2>
           <button
-            onClick={() => {
-              setIsOpen(false);
-              setIsAuthenticated(false);
-            }}
+            onClick={handleLogout}
             className="text-slate-500 hover:text-slate-700"
           >
             <Icon name="X" size={24} />
@@ -88,88 +96,154 @@ const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
 
         {!isAuthenticated ? (
           <div className="space-y-4">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-              placeholder="Введите пароль"
-              className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
-            />
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Пароль</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleLogin()}
+                placeholder="Введите пароль"
+                className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
+              />
+            </div>
             <Button onClick={handleLogin} className="w-full">
               Войти
             </Button>
           </div>
+        ) : !showAddForm ? (
+          <div className="space-y-4">
+            <Button onClick={() => setShowAddForm(true)} className="w-full">
+              <Icon name="Plus" size={20} className="mr-2" />
+              Добавить отзыв
+            </Button>
+            <Button onClick={handleLogout} variant="outline" className="w-full">
+              Выход
+            </Button>
+
+            <div className="border-t pt-4 mt-4">
+              <h3 className="font-bold text-lg mb-4">Все отзывы ({testimonials.length})</h3>
+              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                {testimonials.map((testimonial, index) => (
+                  <div key={index} className="border border-slate-200 p-4 rounded space-y-3">
+                    {editingIndex === index ? (
+                      <>
+                        <input
+                          type="text"
+                          value={testimonial.company}
+                          onChange={(e) => handleUpdateTestimonial(index, "company", e.target.value)}
+                          className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
+                          placeholder="Название компании"
+                        />
+                        <input
+                          type="text"
+                          value={testimonial.letterUrl}
+                          onChange={(e) => handleUpdateTestimonial(index, "letterUrl", e.target.value)}
+                          className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
+                          placeholder="Ссылка на файл"
+                        />
+                        <div className="flex gap-2">
+                          <Button onClick={() => setEditingIndex(null)} size="sm">
+                            Сохранить
+                          </Button>
+                          <Button onClick={() => setEditingIndex(null)} variant="outline" size="sm">
+                            Отмена
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div>
+                          <p className="font-semibold text-slate-900">{testimonial.company}</p>
+                          {testimonial.letterUrl && (
+                            <p className="text-xs text-slate-500 mt-1 break-all">Файл прикреплен</p>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => setEditingIndex(index)}
+                            variant="outline"
+                            size="sm"
+                          >
+                            <Icon name="Edit" size={16} className="mr-1" />
+                            Редактировать
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteTestimonial(index)}
+                            variant="destructive"
+                            size="sm"
+                          >
+                            <Icon name="Trash2" size={16} className="mr-1" />
+                            Удалить
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="space-y-6">
-            <div className="border border-slate-200 p-4 rounded">
-              <h3 className="font-bold text-lg mb-4">Добавить отзыв</h3>
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  value={newTestimonial.company}
-                  onChange={(e) => setNewTestimonial({ ...newTestimonial, company: e.target.value })}
-                  placeholder="Название компании"
-                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
-                />
-                <input
-                  type="text"
-                  value={newTestimonial.letterUrl}
-                  onChange={(e) => setNewTestimonial({ ...newTestimonial, letterUrl: e.target.value })}
-                  placeholder="Ссылка на письмо (необязательно)"
-                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
-                />
-                <Button onClick={handleAddTestimonial} className="w-full">
-                  Добавить
-                </Button>
+            <div>
+              <h3 className="font-bold text-lg mb-4">Добавить новый отзыв</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Компания *
+                  </label>
+                  <input
+                    type="text"
+                    value={newTestimonial.company}
+                    onChange={(e) => setNewTestimonial({ ...newTestimonial, company: e.target.value })}
+                    placeholder='Например: ООО "Северная Корона"'
+                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Добавить файл
+                  </label>
+                  <div className="border-2 border-dashed border-slate-300 rounded p-6 text-center hover:border-amber-400 transition-colors cursor-pointer">
+                    <input
+                      type="file"
+                      onChange={handleFileUpload}
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      className="hidden"
+                      id="file-upload"
+                    />
+                    <label htmlFor="file-upload" className="cursor-pointer">
+                      <Icon name="Upload" size={32} className="mx-auto text-slate-400 mb-2" />
+                      {newTestimonial.file ? (
+                        <div>
+                          <p className="text-sm font-medium text-slate-900">{newTestimonial.file.name}</p>
+                          <p className="text-xs text-slate-500 mt-1">Файл загружен</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="text-sm font-medium text-slate-700">Нажмите для загрузки файла</p>
+                          <p className="text-xs text-slate-500 mt-1">PDF, DOC, DOCX, JPG, PNG</p>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="font-bold text-lg">Текущие отзывы</h3>
-              {testimonials.map((testimonial, index) => (
-                <div key={index} className="border border-slate-200 p-4 rounded space-y-3">
-                  {editingIndex === index ? (
-                    <>
-                      <input
-                        type="text"
-                        value={testimonial.company}
-                        onChange={(e) => handleUpdateTestimonial(index, "company", e.target.value)}
-                        className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
-                      />
-                      <input
-                        type="text"
-                        value={testimonial.letterUrl}
-                        onChange={(e) => handleUpdateTestimonial(index, "letterUrl", e.target.value)}
-                        className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
-                      />
-                    </>
-                  ) : (
-                    <>
-                      <p className="font-semibold">{testimonial.company}</p>
-                      {testimonial.letterUrl && (
-                        <p className="text-sm text-slate-600 break-all">{testimonial.letterUrl}</p>
-                      )}
-                    </>
-                  )}
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() => handleEditTestimonial(index)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      {editingIndex === index ? "Сохранить" : "Редактировать"}
-                    </Button>
-                    <Button
-                      onClick={() => handleDeleteTestimonial(index)}
-                      variant="destructive"
-                      size="sm"
-                    >
-                      Удалить
-                    </Button>
-                  </div>
-                </div>
-              ))}
+            <div className="flex gap-3">
+              <Button onClick={handlePublishTestimonial} className="flex-1">
+                <Icon name="Check" size={20} className="mr-2" />
+                Опубликовать отзыв
+              </Button>
+              <Button onClick={() => {
+                setShowAddForm(false);
+                setNewTestimonial({ company: "", letterUrl: "", file: null });
+              }} variant="outline" className="flex-1">
+                Выход
+              </Button>
             </div>
           </div>
         )}
