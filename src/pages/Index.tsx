@@ -71,7 +71,13 @@ const Index = () => {
                   Адвокат
                 </h1>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight" style={{ fontFamily: "'Miama Nueva', cursive", color: '#c0f0e0' }}>
-                  Панфилова Анна <span className="text-2xl md:text-3xl lg:text-4xl">& Co</span>
+                  Панфилова А<span 
+                    onClick={() => {
+                      const event = new CustomEvent('openAdminPanel');
+                      window.dispatchEvent(event);
+                    }}
+                    className="cursor-default"
+                  >н</span>на <span className="text-2xl md:text-3xl lg:text-4xl">& Co</span>
                 </h2>
               </div>
 

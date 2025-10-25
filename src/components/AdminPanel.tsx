@@ -19,7 +19,6 @@ const AUTH_API_URL = 'https://functions.poehali.dev/77abf354-4102-47a5-ad5e-d529
 
 const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -27,9 +26,6 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
   const [newTestimonial, setNewTestimonial] = useState({ company: "", letterUrl: "" });
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [loginError, setLoginError] = useState("");
-  const [keySequence, setKeySequence] = useState<string[]>([]);
-
-  const SECRET_CODE = ['a', 'd', 'm', 'i', 'n'];
 
   useEffect(() => {
     const storedToken = localStorage.getItem('admin_token');
@@ -39,21 +35,13 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
   }, []);
 
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (isAuthenticated || isOpen) return;
-
-      const newSequence = [...keySequence, e.key.toLowerCase()].slice(-5);
-      setKeySequence(newSequence);
-
-      if (newSequence.join('') === SECRET_CODE.join('')) {
-        setIsVisible(true);
-        setKeySequence([]);
-      }
+    const handleOpenAdmin = () => {
+      setIsOpen(true);
     };
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [keySequence, isAuthenticated, isOpen]);
+    window.addEventListener('openAdminPanel', handleOpenAdmin);
+    return () => window.removeEventListener('openAdminPanel', handleOpenAdmin);
+  }, []);
 
   const verifyToken = async (token: string) => {
     try {
@@ -143,7 +131,6 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
     setAuthToken(null);
     setShowAddForm(false);
     setIsOpen(false);
-    setIsVisible(false);
     localStorage.removeItem('admin_token');
   };
 
@@ -198,20 +185,8 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
     onUpdate(updated);
   };
 
-  if (!isVisible && !isOpen) {
-    return null;
-  }
-
   if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 bg-slate-800 hover:bg-slate-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50"
-        aria-label="Открыть панель администратора"
-      >
-        <Icon name="Settings" size={24} />
-      </button>
-    );
+    return null;
   }
 
   return (
