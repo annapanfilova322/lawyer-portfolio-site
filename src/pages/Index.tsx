@@ -30,11 +30,10 @@ const Index = () => {
     address: 'г. Санкт-Петербург'
   });
 
-  const [certificates, setCertificates] = useState([
-    {name: 'Сертификат Сколково', url: ''},
-    {name: 'Сертификат Комплаенс', url: ''},
-    {name: '', url: ''}
-  ]);
+  const [certificates, setCertificates] = useState({
+    skolkovo: '',
+    compliance: ''
+  });
 
   const API_URL = 'https://functions.poehali.dev/ade328f9-1341-4721-acd7-6241e3ae8c1a';
   const CONTACTS_API_URL = 'https://functions.poehali.dev/3882a477-b6be-4f4b-8489-233902ce1866';
@@ -74,7 +73,7 @@ const Index = () => {
     try {
       const response = await fetch(CERTIFICATES_API_URL);
       const data = await response.json();
-      if (data.certificates && Array.isArray(data.certificates)) {
+      if (data.certificates) {
         setCertificates(data.certificates);
       }
     } catch (error) {
@@ -90,7 +89,7 @@ const Index = () => {
     setContacts(updatedContacts);
   };
 
-  const handleUpdateCertificates = (updatedCertificates: any[]) => {
+  const handleUpdateCertificates = (updatedCertificates: any) => {
     setCertificates(updatedCertificates);
   };
 
@@ -185,18 +184,25 @@ const Index = () => {
         <div className="container mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
             <div className="flex flex-col gap-3">
-              {certificates.map((cert, index) => 
-                cert.name && cert.url ? (
-                  <a
-                    key={index}
-                    href={cert.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium hover:text-mint transition-colors"
-                  >
-                    {cert.name}
-                  </a>
-                ) : null
+              {certificates.skolkovo && (
+                <a
+                  href={certificates.skolkovo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium hover:text-mint transition-colors"
+                >
+                  Сертификат Сколково
+                </a>
+              )}
+              {certificates.compliance && (
+                <a
+                  href={certificates.compliance}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium hover:text-mint transition-colors"
+                >
+                  Сертификат Комплаенс
+                </a>
               )}
             </div>
 
