@@ -52,44 +52,30 @@ const Index = () => {
         <div className="container mx-auto max-w-7xl relative z-10 pt-12">
           <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
-              <div className="space-y-4">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.4] flex flex-wrap items-baseline gap-4" style={{ fontFamily: "'Miama Nueva', cursive", color: '#fbbf24', textShadow: '2px 2px 8px rgba(0,0,0,0.3)' }}>
-                  <span className="relative -top-3">Панфилова</span>
-                  <span>Анна</span>
+              <div className="space-y-6">
+                <h1 className="text-xl md:text-2xl text-white font-light tracking-wide uppercase">
+                  Адвокат
                 </h1>
-                <div className="flex items-center gap-4 pt-1">
-                  <div className="h-0.5 w-16 bg-amber-400"></div>
-                  <p className="text-xl md:text-2xl text-amber-400 font-light tracking-[0.2em] uppercase">
-                    Адвокат
-                  </p>
-                </div>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-white" style={{ fontFamily: "'Miama Nueva', cursive" }}>
+                  Панфилова Анна & Co
+                </h2>
+                <p className="text-lg md:text-xl text-white">
+                  Налоги, экономика, бизнес
+                </p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-md border-2 border-amber-400/30 p-6 md:p-8">
-                <p className="text-lg md:text-xl text-white font-medium leading-relaxed">
+              <div className="space-y-2">
+                <p className="text-base md:text-lg text-white">
                   Член адвокатской палаты г. Санкт-Петербурга с 2013 года.
                 </p>
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-2xl md:text-3xl font-bold text-amber-400 tracking-wide">
-                  Экономика, Налоги, Бизнес
-                </h2>
                 <div className="space-y-4">
                   {expertise.map((item, index) => (
-                    <div 
-                      key={index} 
-                      className="bg-white/10 backdrop-blur-md border-l-4 border-amber-400 p-6 hover:bg-white/15 transition-all group"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-amber-400/20 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-400/30 transition-colors">
-                          <Icon name={item.icon} size={20} className="text-amber-400" />
-                        </div>
-                        <p className="text-base md:text-lg text-white font-medium leading-relaxed pt-1.5">
-                          {item.title}
-                        </p>
-                      </div>
-                    </div>
+                    <p key={index} className="text-base md:text-lg text-white">
+                      {item.title}
+                    </p>
                   ))}
                 </div>
               </div>
@@ -127,12 +113,11 @@ const Index = () => {
       <section className="py-20 md:py-32 px-4 bg-gradient-to-b from-slate-50 to-white">
         <div className="container mx-auto max-w-5xl">
           <div className="space-y-10">
-            <div className="space-y-4 text-center">
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900">
-                БЛАГОДАРНОСТИ
+            <div className="space-y-4">
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900" style={{ fontFamily: "'Miama Nueva', cursive" }}>
+                Отзывы
               </h2>
-              <div className="h-1 w-24 bg-amber-400 mx-auto"></div>
-              <p className="text-slate-600 text-lg max-w-2xl mx-auto">
+              <p className="text-slate-600 text-base max-w-2xl">
                 Благодарственные письма от компаний-клиентов
               </p>
             </div>
