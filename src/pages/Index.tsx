@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 import { useState } from "react";
+import TestimonialCarousel from "@/components/TestimonialCarousel";
+import AdminPanel from "@/components/AdminPanel";
 
 const Index = () => {
   const [showContactModal, setShowContactModal] = useState(false);
@@ -20,7 +22,7 @@ const Index = () => {
     }
   ];
 
-  const testimonials = [
+  const [testimonials, setTestimonials] = useState([
     {
       company: "ООО \"Северная Корона\"",
       letterUrl: ""
@@ -33,7 +35,7 @@ const Index = () => {
       company: "ПАО \"Невский Альянс\"",
       letterUrl: ""
     }
-  ];
+  ]);
 
 
 
@@ -53,27 +55,27 @@ const Index = () => {
           <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
               <div className="space-y-6">
-                <h1 className="text-xl md:text-2xl text-white font-light tracking-wide uppercase">
+                <h1 className="text-xl md:text-2xl text-amber-400 font-light tracking-wide uppercase">
                   Адвокат
                 </h1>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-white" style={{ fontFamily: "'Miama Nueva', cursive" }}>
-                  Панфилова Анна & Co
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight flex flex-wrap items-baseline gap-3" style={{ fontFamily: "'Miama Nueva', cursive", color: '#fbbf24' }}>
+                  <span>Панфилова Анна</span>
+                  <span className="text-3xl md:text-4xl lg:text-5xl">& Co</span>
                 </h2>
-                <p className="text-lg md:text-xl text-white">
+              </div>
+
+              <div className="space-y-6">
+                <p className="text-base md:text-lg text-amber-400">
                   Налоги, экономика, бизнес
                 </p>
-              </div>
 
-              <div className="space-y-2">
-                <p className="text-base md:text-lg text-white">
+                <p className="text-base md:text-lg text-amber-400">
                   Член адвокатской палаты г. Санкт-Петербурга с 2013 года.
                 </p>
-              </div>
 
-              <div className="space-y-4">
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {expertise.map((item, index) => (
-                    <p key={index} className="text-base md:text-lg text-white">
+                    <p key={index} className="text-base md:text-lg text-amber-400">
                       {item.title}
                     </p>
                   ))}
@@ -117,50 +119,9 @@ const Index = () => {
               <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900" style={{ fontFamily: "'Miama Nueva', cursive" }}>
                 Отзывы
               </h2>
-              <p className="text-slate-600 text-base max-w-2xl">
-                Благодарственные письма от компаний-клиентов
-              </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {testimonials.map((testimonial, index) => (
-                <div 
-                  key={index} 
-                  className="bg-white border-2 border-slate-200 hover:border-amber-400 p-6 transition-all duration-300 group hover:shadow-xl"
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-center h-16">
-                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400/20 to-amber-400/10 flex items-center justify-center">
-                        <Icon name="Building2" size={24} className="text-amber-500" />
-                      </div>
-                    </div>
-                    
-                    <div className="text-center">
-                      <h3 className="font-bold text-slate-900 text-base leading-snug">
-                        {testimonial.company}
-                      </h3>
-                    </div>
-
-                    {testimonial.letterUrl ? (
-                      <a 
-                        href={testimonial.letterUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-3 px-4 transition-colors text-sm uppercase tracking-wide"
-                      >
-                        <Icon name="FileText" size={18} />
-                        <span>Открыть письмо</span>
-                      </a>
-                    ) : (
-                      <div className="flex items-center justify-center gap-2 w-full bg-slate-100 text-slate-400 font-semibold py-3 px-4 text-sm uppercase tracking-wide cursor-not-allowed">
-                        <Icon name="FileText" size={18} />
-                        <span>Письмо не добавлено</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <TestimonialCarousel testimonials={testimonials} />
           </div>
         </div>
       </section>
@@ -170,26 +131,18 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
             <div className="space-y-2">
               <p className="text-sm font-bold tracking-widest uppercase">
-                © 2024 Панфилова Анна
+                © 2025 Панфилова Анна
               </p>
               <p className="text-xs text-white/60 font-medium">
                 Лицензия адвоката № 77/123456
               </p>
             </div>
-            <div className="flex gap-6">
-              <a href="#" className="hover:text-secondary transition-colors p-2 hover:scale-110 transition-transform duration-300">
-                <Icon name="Linkedin" size={22} />
-              </a>
-              <a href="#" className="hover:text-secondary transition-colors p-2 hover:scale-110 transition-transform duration-300">
-                <Icon name="Mail" size={22} />
-              </a>
-              <a href="#" className="hover:text-secondary transition-colors p-2 hover:scale-110 transition-transform duration-300">
-                <Icon name="Phone" size={22} />
-              </a>
-            </div>
+
           </div>
         </div>
       </footer>
+
+      <AdminPanel testimonials={testimonials} onUpdate={setTestimonials} />
 
       {showContactModal && (
         <div 
