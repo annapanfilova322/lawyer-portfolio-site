@@ -42,11 +42,6 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
       return;
     }
 
-    if (!newTestimonial.letterUrl.trim()) {
-      alert("Пожалуйста, вставьте ссылку на благодарственное письмо");
-      return;
-    }
-
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -269,7 +264,7 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Ссылка на благодарственное письмо
+                    Ссылка на благодарственное письмо (необязательно)
                   </label>
                   <input
                     type="url"
