@@ -21,7 +21,7 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [newTestimonial, setNewTestimonial] = useState({ company: "", letterUrl: "", file: null as File | null });
+  const [newTestimonial, setNewTestimonial] = useState({ company: "", letterUrl: "" });
 
   const ADMIN_PASSWORD = "panfilova2025";
 
@@ -34,42 +34,7 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setNewTestimonial(prev => ({ ...prev, file }));
-    }
-  };
 
-  const uploadFileToCloud = async (file: File): Promise<string> => {
-    const reader = new FileReader();
-    return new Promise((resolve, reject) => {
-      reader.onload = async () => {
-        try {
-          const base64 = reader.result as string;
-          const response = await fetch('https://functions.poehali.dev/937a05de-e6da-493b-bbe0-6d83e0fd02e2', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              file: base64,
-              fileName: file.name
-            })
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            resolve(data.url);
-          } else {
-            reject(new Error('Ошибка загрузки файла'));
-          }
-        } catch (error) {
-          reject(error);
-        }
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
 
   const handlePublishTestimonial = async () => {
     if (!newTestimonial.company.trim()) {
@@ -77,24 +42,23 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
       return;
     }
 
-    try {
-      let fileUrl = "";
-      
-      if (newTestimonial.file) {
-        fileUrl = await uploadFileToCloud(newTestimonial.file);
-      }
+    if (!newTestimonial.letterUrl.trim()) {
+      alert("Пожалуйста, вставьте ссылку на благодарственное письмо");
+      return;
+    }
 
+    try {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           company: newTestimonial.company,
-          letterUrl: fileUrl
+          letterUrl: newTestimonial.letterUrl
         })
       });
 
       if (response.ok) {
-        setNewTestimonial({ company: "", letterUrl: "", file: null });
+        setNewTestimonial({ company: "", letterUrl: "" });
         setShowAddForm(false);
         onRefresh();
       } else {
@@ -292,31 +256,19 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Загрузить благодарственное письмо
+                    Ссылка на благодарственное письмо
                   </label>
-                  <div className="border-2 border-dashed border-slate-300 rounded p-6 text-center hover:border-amber-400 transition-colors cursor-pointer">
-                    <input
-                      type="file"
-                      onChange={handleFileUpload}
-                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                      className="hidden"
-                      id="file-upload"
-                    />
-                    <label htmlFor="file-upload" className="cursor-pointer">
-                      <Icon name="Upload" size={32} className="mx-auto text-slate-400 mb-2" />
-                      {newTestimonial.file ? (
-                        <div>
-                          <p className="text-sm font-medium text-slate-900">{newTestimonial.file.name}</p>
-                          <p className="text-xs text-slate-500 mt-1">Файл выбран, готов к загрузке</p>
-                        </div>
-                      ) : (
-                        <div>
-                          <p className="text-sm font-medium text-slate-700">Нажмите для выбора файла</p>
-                          <p className="text-xs text-slate-500 mt-1">PDF, DOC, DOCX, JPG, PNG (макс. 10 МБ)</p>
-                        </div>
-                      )}
-                    </label>
-                  </div>
+                  <input
+                    type="url"
+                    value={newTestimonial.letterUrl}
+                    onChange={(e) => setNewTestimonial({ ...newTestimonial, letterUrl: e.target.value })}
+                    placeholder="https://drive.google.com/file/d/..."
+                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
+                  />
+                  <p className="text-xs text-slate-500 mt-2">
+                    <Icon name="Info" size={14} className="inline mr-1" />
+                    Поддерживаются ссылки из Google Drive или Яндекс.Диск. Убедитесь, что доступ по ссылке открыт для всех.
+                  </p>
                 </div>
               </div>
             </div>
@@ -328,7 +280,7 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
               </Button>
               <Button onClick={() => {
                 setShowAddForm(false);
-                setNewTestimonial({ company: "", letterUrl: "", file: null });
+                setNewTestimonial({ company: "", letterUrl: "" });
               }} variant="outline" className="flex-1">
                 Выход
               </Button>
