@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "Upload file endpoint ready",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "file": "data:text/plain;base64,SGVsbG8gV29ybGQ=",
+        "fileName": "test.txt"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "url": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -37,10 +37,38 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setNewTestimonial({ ...newTestimonial, file });
-      const fileUrl = URL.createObjectURL(file);
-      setNewTestimonial(prev => ({ ...prev, file, letterUrl: fileUrl }));
+      setNewTestimonial(prev => ({ ...prev, file }));
     }
+  };
+
+  const uploadFileToCloud = async (file: File): Promise<string> => {
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      reader.onload = async () => {
+        try {
+          const base64 = reader.result as string;
+          const response = await fetch('https://functions.poehali.dev/937a05de-e6da-493b-bbe0-6d83e0fd02e2', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file: base64,
+              fileName: file.name
+            })
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            resolve(data.url);
+          } else {
+            reject(new Error('Ошибка загрузки файла'));
+          }
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   };
 
   const handlePublishTestimonial = async () => {
@@ -50,12 +78,18 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
     }
 
     try {
+      let fileUrl = "";
+      
+      if (newTestimonial.file) {
+        fileUrl = await uploadFileToCloud(newTestimonial.file);
+      }
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           company: newTestimonial.company,
-          letterUrl: newTestimonial.letterUrl
+          letterUrl: fileUrl
         })
       });
 
