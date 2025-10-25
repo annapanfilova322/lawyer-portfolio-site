@@ -119,7 +119,7 @@ const Index = () => {
                 <h2 className="text-lg font-bold tracking-[0.2em] text-mint/80 uppercase">
                   Контакты
                 </h2>
-                <div className="grid sm:grid-cols-3 gap-6 lg:gap-20">
+                <div className="grid sm:grid-cols-3 gap-6 lg:gap-28">
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Телефон</span>
                     <span className="font-bold text-white text-lg whitespace-nowrap">
