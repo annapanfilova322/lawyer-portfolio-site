@@ -87,14 +87,14 @@ const Index = () => {
         <div className="container mx-auto max-w-7xl relative z-10 pt-4">
           <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
-              <div className="space-y-1">
+              <div className="space-y-4">
                 <h1 className="text-xl md:text-2xl text-mint font-light tracking-wide uppercase">
                   Адвокат
                 </h1>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight" style={{ fontFamily: "'Miama Nueva', cursive", color: '#c0f0e0' }}>
                   Панфилова Анна <span className="text-2xl md:text-3xl lg:text-4xl">& Co</span>
                 </h2>
-                <p className="text-sm text-mint/80 mt-3">
+                <p className="text-sm text-mint/80">
                   Член адвокатской палаты г.Санкт-Петербурга с 2013 года
                 </p>
               </div>
