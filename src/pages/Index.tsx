@@ -87,7 +87,7 @@ const Index = () => {
         <div className="container mx-auto max-w-7xl relative z-10 pt-4">
           <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
-              <div className="space-y-3">
+              <div className="space-y-1">
                 <h1 className="text-xl md:text-2xl text-mint font-light tracking-wide uppercase">
                   Адвокат
                 </h1>
