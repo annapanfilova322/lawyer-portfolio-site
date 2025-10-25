@@ -11,8 +11,11 @@ TOKEN_EXPIRY_HOURS = 24
 MASTER_KEY = "K7#m@nPq$vR2!xL"
 
 login_attempts: Dict[str, Dict[str, Any]] = {}
+master_key_attempts: Dict[str, Dict[str, Any]] = {}
 MAX_ATTEMPTS = 5
+MAX_MASTER_KEY_ATTEMPTS = 3
 LOCKOUT_DURATION = 900
+MASTER_KEY_LOCKOUT_DURATION = 900
 
 current_password_hash = PASSWORD_HASH
 
@@ -179,8 +182,36 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         master_key = body_data.get('master_key', '')
         new_password = body_data.get('new_password', '')
+        client_ip = event.get('requestContext', {}).get('identity', {}).get('sourceIp', 'unknown')
+        current_time = datetime.now().timestamp()
+        
+        if client_ip in master_key_attempts:
+            attempt_data = master_key_attempts[client_ip]
+            if attempt_data['count'] >= MAX_MASTER_KEY_ATTEMPTS:
+                time_since_lockout = current_time - attempt_data['locked_at']
+                if time_since_lockout < MASTER_KEY_LOCKOUT_DURATION:
+                    remaining = int(MASTER_KEY_LOCKOUT_DURATION - time_since_lockout)
+                    return {
+                        'statusCode': 429,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'error': 'Слишком много попыток ввода мастер-ключа',
+                            'retry_after': remaining
+                        })
+                    }
+                else:
+                    master_key_attempts[client_ip] = {'count': 0, 'locked_at': 0}
         
         if master_key != MASTER_KEY:
+            if client_ip not in master_key_attempts:
+                master_key_attempts[client_ip] = {'count': 0, 'locked_at': 0}
+            master_key_attempts[client_ip]['count'] += 1
+            if master_key_attempts[client_ip]['count'] >= MAX_MASTER_KEY_ATTEMPTS:
+                master_key_attempts[client_ip]['locked_at'] = current_time
+            
             return {
                 'statusCode': 401,
                 'headers': {
@@ -199,6 +230,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 },
                 'body': json.dumps({'error': 'Пароль должен быть не менее 6 символов'})
             }
+        
+        master_key_attempts.pop(client_ip, None)
         
         new_password_bytes = new_password.encode('utf-8')
         new_hash = bcrypt.hashpw(new_password_bytes, bcrypt.gensalt())

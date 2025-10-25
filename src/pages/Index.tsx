@@ -87,22 +87,21 @@ const Index = () => {
         <div className="container mx-auto max-w-7xl relative z-10 pt-4">
           <div className="grid lg:grid-cols-[1fr,300px] gap-16 xl:gap-20 items-start">
             <div className="space-y-8 max-w-4xl mx-auto pt-8">
-              <div className="space-y-6">
+              <div className="space-y-3">
                 <h1 className="text-xl md:text-2xl text-mint font-light tracking-wide uppercase">
                   Адвокат
                 </h1>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight" style={{ fontFamily: "'Miama Nueva', cursive", color: '#c0f0e0' }}>
                   Панфилова Анна <span className="text-2xl md:text-3xl lg:text-4xl">& Co</span>
                 </h2>
+                <p className="text-sm text-mint/80 -mt-1">
+                  Член адвокатской палаты г.Санкт-Петербурга с 2013 года
+                </p>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-6 pt-4">
                 <p className="text-base md:text-lg text-mint">
-                  Налоги, экономика, бизнес
-                </p>
-
-                <p className="text-base md:text-lg text-mint">
-                  Член адвокатской палаты г. Санкт-Петербурга с 2013 года.
+                  Недвижимость. Жилая/коммерция, подбор, оценка рисков, сопровождение сделок
                 </p>
 
                 <div className="space-y-6">
@@ -180,9 +179,7 @@ const Index = () => {
                   tabIndex={0}
                 >а</span>нфилова Анна
               </p>
-              <p className="text-xs text-white/60 font-medium">
-                Лицензия адвоката № 77/123456
-              </p>
+
             </div>
 
           </div>

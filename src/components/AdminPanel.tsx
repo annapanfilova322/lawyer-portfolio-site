@@ -119,11 +119,6 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
   const handlePasswordReset = async () => {
     setPasswordResetError("");
 
-    if (masterKey !== "K7#m@nPq$vR2!xL") {
-      setPasswordResetError("Неверный мастер-ключ");
-      return;
-    }
-
     if (newPassword.length < 6) {
       setPasswordResetError("Пароль должен быть не менее 6 символов");
       return;
@@ -152,6 +147,9 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
         setMasterKey("");
         setNewPassword("");
         setConfirmPassword("");
+        setPasswordResetError("");
+      } else if (response.status === 429) {
+        setPasswordResetError(`Слишком много попыток. Повторите через ${Math.ceil(data.retry_after / 60)} минут.`);
       } else {
         setPasswordResetError(data.error || "Ошибка смены пароля");
       }
