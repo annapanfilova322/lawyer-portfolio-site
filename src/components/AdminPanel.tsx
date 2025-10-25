@@ -143,14 +143,17 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
       const response = await fetch(`${apiUrl}?id=${id}`, {
         method: 'DELETE',
         headers: {
-          'X-Auth-Token': authToken || ''
+          'X-Auth-Token': authToken || '',
+          'Content-Type': 'application/json'
         }
       });
 
       if (response.ok) {
         onRefresh();
       } else {
-        alert("Ошибка при удалении отзыва");
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Delete error:", errorData);
+        alert(`Ошибка при удалении отзыва: ${errorData.error || response.statusText}`);
       }
     } catch (error) {
       console.error("Error deleting testimonial:", error);
