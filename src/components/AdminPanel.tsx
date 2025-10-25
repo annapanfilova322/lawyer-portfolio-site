@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
@@ -15,26 +15,96 @@ interface AdminPanelProps {
   onRefresh: () => void;
 }
 
+const AUTH_API_URL = 'https://functions.poehali.dev/77abf354-4102-47a5-ad5e-d5290b704fcd';
+
 const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [newTestimonial, setNewTestimonial] = useState({ company: "", letterUrl: "" });
+  const [authToken, setAuthToken] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState("");
+  const [keySequence, setKeySequence] = useState<string[]>([]);
 
-  const ADMIN_PASSWORD = "panfilova2025";
+  const SECRET_CODE = ['a', 'd', 'm', 'i', 'n'];
 
-  const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      setPassword("");
-    } else {
-      alert("Неверный пароль");
+  useEffect(() => {
+    const storedToken = localStorage.getItem('admin_token');
+    if (storedToken) {
+      verifyToken(storedToken);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (isAuthenticated || isOpen) return;
+
+      const newSequence = [...keySequence, e.key.toLowerCase()].slice(-5);
+      setKeySequence(newSequence);
+
+      if (newSequence.join('') === SECRET_CODE.join('')) {
+        setIsVisible(true);
+        setKeySequence([]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [keySequence, isAuthenticated, isOpen]);
+
+  const verifyToken = async (token: string) => {
+    try {
+      const response = await fetch(AUTH_API_URL, {
+        method: 'GET',
+        headers: {
+          'X-Auth-Token': token
+        }
+      });
+
+      if (response.ok) {
+        setAuthToken(token);
+        setIsAuthenticated(true);
+      } else {
+        localStorage.removeItem('admin_token');
+        setAuthToken(null);
+      }
+    } catch (error) {
+      console.error('Token verification error:', error);
+      localStorage.removeItem('admin_token');
+      setAuthToken(null);
     }
   };
 
+  const handleLogin = async () => {
+    setLoginError("");
 
+    try {
+      const response = await fetch(AUTH_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.token) {
+        setAuthToken(data.token);
+        setIsAuthenticated(true);
+        setPassword("");
+        localStorage.setItem('admin_token', data.token);
+      } else if (response.status === 429) {
+        setLoginError(`Слишком много попыток. Повторите через ${Math.ceil(data.retry_after / 60)} минут.`);
+      } else {
+        setLoginError(data.error || "Неверный пароль");
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError("Ошибка подключения к серверу");
+    }
+  };
 
   const handlePublishTestimonial = async () => {
     if (!newTestimonial.company.trim()) {
@@ -45,7 +115,10 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
         body: JSON.stringify({
           company: newTestimonial.company,
           letterUrl: newTestimonial.letterUrl
@@ -67,8 +140,11 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setAuthToken(null);
     setShowAddForm(false);
     setIsOpen(false);
+    setIsVisible(false);
+    localStorage.removeItem('admin_token');
   };
 
   const handleDeleteTestimonial = async (id: number) => {
@@ -76,7 +152,10 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
 
     try {
       const response = await fetch(`${apiUrl}?id=${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'X-Auth-Token': authToken || ''
+        }
       });
 
       if (response.ok) {
@@ -94,7 +173,10 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
     try {
       const response = await fetch(apiUrl, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
         body: JSON.stringify(testimonial)
       });
 
@@ -115,6 +197,10 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
     updated[index] = { ...updated[index], [field]: value };
     onUpdate(updated);
   };
+
+  if (!isVisible && !isOpen) {
+    return null;
+  }
 
   if (!isOpen) {
     return (
@@ -151,12 +237,18 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleLogin()}
                 placeholder="Введите пароль"
-                className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
+                className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
               />
+              {loginError && (
+                <p className="text-red-600 text-sm mt-2">{loginError}</p>
+              )}
             </div>
             <Button onClick={handleLogin} className="w-full">
               Войти
             </Button>
+            <div className="text-xs text-slate-500 text-center mt-4">
+              Защита: JWT токены, rate limiting (5 попыток)
+            </div>
           </div>
         ) : !showAddForm ? (
           <div className="space-y-4">
@@ -273,25 +365,17 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
                     placeholder="https://drive.google.com/file/d/..."
                     className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
                   />
-                  <p className="text-xs text-slate-500 mt-2">
-                    <Icon name="Info" size={14} className="inline mr-1" />
-                    Поддерживаются ссылки из Google Drive или Яндекс.Диск. Убедитесь, что доступ по ссылке открыт для всех.
-                  </p>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <Button onClick={handlePublishTestimonial} className="flex-1">
+                    Опубликовать
+                  </Button>
+                  <Button onClick={() => setShowAddForm(false)} variant="outline" className="flex-1">
+                    Отмена
+                  </Button>
                 </div>
               </div>
-            </div>
-
-            <div className="flex gap-3">
-              <Button onClick={handlePublishTestimonial} className="flex-1">
-                <Icon name="Check" size={20} className="mr-2" />
-                Опубликовать отзыв
-              </Button>
-              <Button onClick={() => {
-                setShowAddForm(false);
-                setNewTestimonial({ company: "", letterUrl: "" });
-              }} variant="outline" className="flex-1">
-                Выход
-              </Button>
             </div>
           </div>
         )}
