@@ -69,16 +69,7 @@ const Index = () => {
                   Адвокат
                 </h1>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight" style={{ fontFamily: "'Miama Nueva', cursive", color: '#c0f0e0' }}>
-                  Панфилова А<span 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const event = new CustomEvent('openAdminPanel');
-                      window.dispatchEvent(event);
-                    }}
-                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                    role="button"
-                    tabIndex={0}
-                  >н</span>на <span className="text-2xl md:text-3xl lg:text-4xl">& Co</span>
+                  Панфилова Анна <span className="text-2xl md:text-3xl lg:text-4xl">& Co</span>
                 </h2>
               </div>
 
@@ -155,7 +146,16 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
             <div className="space-y-2">
               <p className="text-sm font-bold tracking-widest uppercase">
-                © 2025 Панфилова Анна
+                © 2025 Панфилова А<span 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const event = new CustomEvent('openAdminPanel');
+                    window.dispatchEvent(event);
+                  }}
+                  className="cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                >н</span>на
               </p>
               <p className="text-xs text-white/60 font-medium">
                 Лицензия адвоката № 77/123456
