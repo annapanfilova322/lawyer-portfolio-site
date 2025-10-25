@@ -42,22 +42,16 @@ const TestimonialCarousel = ({ testimonials }: TestimonialCarouselProps) => {
                         href={testimonial.letterUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block"
+                        className="inline-block"
                       >
-                        <div className="w-32 h-40 border-2 border-slate-300 rounded-lg overflow-hidden hover:border-mint transition-colors shadow-sm">
-                          <img 
-                            src={testimonial.letterUrl} 
-                            alt={`Письмо от ${testimonial.company}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </a>
-                    ) : (
-                      <div className="w-32 h-40 flex items-center justify-center">
                         <button className="px-4 py-2 bg-mint text-slate-900 text-xs font-semibold rounded-md hover:bg-mint/90 transition-colors shadow-sm">
                           Открыть отзыв
                         </button>
-                      </div>
+                      </a>
+                    ) : (
+                      <button className="px-4 py-2 bg-mint text-slate-900 text-xs font-semibold rounded-md hover:bg-mint/90 transition-colors shadow-sm">
+                        Открыть отзыв
+                      </button>
                     )}
                   </div>
                 </div>
