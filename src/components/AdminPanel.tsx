@@ -248,6 +248,50 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
     onUpdate(updated);
   };
 
+  const handleMoveUp = async (index: number) => {
+    if (index === 0) return;
+    
+    const updated = [...testimonials];
+    [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
+    onUpdate(updated);
+    
+    try {
+      await fetch(apiUrl, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify(updated)
+      });
+    } catch (error) {
+      console.error("Error reordering testimonials:", error);
+      onRefresh();
+    }
+  };
+
+  const handleMoveDown = async (index: number) => {
+    if (index === testimonials.length - 1) return;
+    
+    const updated = [...testimonials];
+    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
+    onUpdate(updated);
+    
+    try {
+      await fetch(apiUrl, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify(updated)
+      });
+    } catch (error) {
+      console.error("Error reordering testimonials:", error);
+      onRefresh();
+    }
+  };
+
   const handleSaveContacts = async () => {
     try {
       const response = await fetch(contactsApiUrl, {
@@ -338,6 +382,8 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
                 onCancel={() => setEditingIndex(null)}
                 onDelete={handleDeleteTestimonial}
                 onFieldChange={handleFieldChange}
+                onMoveUp={handleMoveUp}
+                onMoveDown={handleMoveDown}
               />
             </div>
           </>

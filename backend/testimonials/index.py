@@ -17,7 +17,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type, X-Auth-Token',
                 'Access-Control-Max-Age': '86400'
             },
@@ -32,7 +32,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         cur = conn.cursor()
         
         if method == 'GET':
-            cur.execute('SELECT id, company, letter_url, created_at FROM testimonials ORDER BY created_at DESC')
+            cur.execute('SELECT id, company, letter_url, created_at FROM testimonials ORDER BY sort_order ASC, created_at DESC')
             rows = cur.fetchall()
             testimonials = [
                 {
@@ -78,7 +78,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             conn.commit()
             
             return {
-                'statusCode': 201,
+                'statusCode': 200,
                 'headers': {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
@@ -117,6 +117,39 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'Access-Control-Allow-Origin': '*'
                 },
                 'body': json.dumps({'message': 'Testimonial updated'}),
+                'isBase64Encoded': False
+            }
+        
+        elif method == 'PATCH':
+            body_data = json.loads(event.get('body', '{}'))
+            
+            if not isinstance(body_data, list):
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Array of testimonials required'}),
+                    'isBase64Encoded': False
+                }
+            
+            for idx, testimonial in enumerate(body_data):
+                if 'id' in testimonial:
+                    cur.execute(
+                        "UPDATE testimonials SET sort_order = %s WHERE id = %s",
+                        (idx, testimonial['id'])
+                    )
+            
+            conn.commit()
+            
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'message': 'Order updated'}),
                 'isBase64Encoded': False
             }
         

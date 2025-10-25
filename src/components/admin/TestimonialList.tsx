@@ -15,6 +15,8 @@ interface TestimonialListProps {
   onCancel: () => void;
   onDelete: (id: number) => void;
   onFieldChange: (index: number, field: string, value: string) => void;
+  onMoveUp: (index: number) => void;
+  onMoveDown: (index: number) => void;
 }
 
 const TestimonialList = ({
@@ -24,7 +26,9 @@ const TestimonialList = ({
   onSave,
   onCancel,
   onDelete,
-  onFieldChange
+  onFieldChange,
+  onMoveUp,
+  onMoveDown
 }: TestimonialListProps) => {
   return (
     <div className="space-y-6">
@@ -77,6 +81,22 @@ const TestimonialList = ({
                   )}
                 </div>
                 <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => onMoveUp(index)}
+                    disabled={index === 0}
+                    className="text-slate-600 hover:text-slate-800 disabled:opacity-30 disabled:cursor-not-allowed"
+                    title="Вверх"
+                  >
+                    <Icon name="ChevronUp" size={16} />
+                  </button>
+                  <button
+                    onClick={() => onMoveDown(index)}
+                    disabled={index === testimonials.length - 1}
+                    className="text-slate-600 hover:text-slate-800 disabled:opacity-30 disabled:cursor-not-allowed"
+                    title="Вниз"
+                  >
+                    <Icon name="ChevronDown" size={16} />
+                  </button>
                   <button
                     onClick={() => onEdit(index)}
                     className="text-blue-600 hover:text-blue-800"
