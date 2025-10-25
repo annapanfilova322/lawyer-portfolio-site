@@ -30,12 +30,19 @@ const Index = () => {
     address: 'г. Санкт-Петербург'
   });
 
+  const [certificates, setCertificates] = useState({
+    skolkovo: '',
+    compliance: ''
+  });
+
   const API_URL = 'https://functions.poehali.dev/ade328f9-1341-4721-acd7-6241e3ae8c1a';
   const CONTACTS_API_URL = 'https://functions.poehali.dev/3882a477-b6be-4f4b-8489-233902ce1866';
+  const CERTIFICATES_API_URL = 'https://functions.poehali.dev/5f47d76d-7bfe-4d3f-b194-55bc0b579844';
 
   useEffect(() => {
     fetchTestimonials();
     fetchContacts();
+    fetchCertificates();
   }, []);
 
   const fetchTestimonials = async () => {
@@ -62,12 +69,28 @@ const Index = () => {
     }
   };
 
+  const fetchCertificates = async () => {
+    try {
+      const response = await fetch(CERTIFICATES_API_URL);
+      const data = await response.json();
+      if (data.certificates) {
+        setCertificates(data.certificates);
+      }
+    } catch (error) {
+      console.error('Error fetching certificates:', error);
+    }
+  };
+
   const handleUpdateTestimonials = (updatedTestimonials: any[]) => {
     setTestimonials(updatedTestimonials);
   };
 
   const handleUpdateContacts = (updatedContacts: any) => {
     setContacts(updatedContacts);
+  };
+
+  const handleUpdateCertificates = (updatedCertificates: any) => {
+    setCertificates(updatedCertificates);
   };
 
 
@@ -160,6 +183,29 @@ const Index = () => {
       <footer className="bg-primary text-white py-12 md:py-16 px-4">
         <div className="container mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            <div className="flex flex-col gap-3">
+              {certificates.skolkovo && (
+                <a
+                  href={certificates.skolkovo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium hover:text-mint transition-colors"
+                >
+                  Сертификат Сколково
+                </a>
+              )}
+              {certificates.compliance && (
+                <a
+                  href={certificates.compliance}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium hover:text-mint transition-colors"
+                >
+                  Сертификат Комплаенс
+                </a>
+              )}
+            </div>
+
             <div className="space-y-2">
               <p className="text-sm font-bold tracking-widest uppercase">
                 © 2025 П<span 
@@ -173,9 +219,7 @@ const Index = () => {
                   tabIndex={0}
                 >а</span>нфилова Анна
               </p>
-
             </div>
-
           </div>
         </div>
       </footer>
@@ -189,6 +233,10 @@ const Index = () => {
         onUpdateContacts={handleUpdateContacts}
         contactsApiUrl={CONTACTS_API_URL}
         onRefreshContacts={fetchContacts}
+        certificates={certificates}
+        onUpdateCertificates={handleUpdateCertificates}
+        certificatesApiUrl={CERTIFICATES_API_URL}
+        onRefreshCertificates={fetchCertificates}
       />
 
       {showContactModal && (

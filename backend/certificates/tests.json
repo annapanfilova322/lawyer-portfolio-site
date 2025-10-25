@@ -1,0 +1,20 @@
+{
+  "tests": [
+    {
+      "name": "Get certificates",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Update certificates",
+      "method": "PUT",
+      "path": "/",
+      "body": {
+        "skolkovo": "https://example.com/skolkovo.pdf",
+        "compliance": "https://example.com/compliance.pdf"
+      },
+      "expectedStatus": 200
+    }
+  ]
+}

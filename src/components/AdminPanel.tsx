@@ -4,6 +4,7 @@ import LoginForm from "@/components/admin/LoginForm";
 import PasswordResetForm from "@/components/admin/PasswordResetForm";
 import AdminMenu from "@/components/admin/AdminMenu";
 import ContactsEditForm from "@/components/admin/ContactsEditForm";
+import CertificatesEditForm from "@/components/admin/CertificatesEditForm";
 import TestimonialAddForm from "@/components/admin/TestimonialAddForm";
 import TestimonialList from "@/components/admin/TestimonialList";
 
@@ -19,6 +20,11 @@ interface Contacts {
   address: string;
 }
 
+interface Certificates {
+  skolkovo: string;
+  compliance: string;
+}
+
 interface AdminPanelProps {
   testimonials: Testimonial[];
   onUpdate: (testimonials: Testimonial[]) => void;
@@ -28,11 +34,15 @@ interface AdminPanelProps {
   onUpdateContacts: (contacts: Contacts) => void;
   contactsApiUrl: string;
   onRefreshContacts: () => void;
+  certificates: Certificates;
+  onUpdateCertificates: (certificates: Certificates) => void;
+  certificatesApiUrl: string;
+  onRefreshCertificates: () => void;
 }
 
 const AUTH_API_URL = 'https://functions.poehali.dev/77abf354-4102-47a5-ad5e-d5290b704fcd';
 
-const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpdateContacts, contactsApiUrl, onRefreshContacts }: AdminPanelProps) => {
+const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpdateContacts, contactsApiUrl, onRefreshContacts, certificates, onUpdateCertificates, certificatesApiUrl, onRefreshCertificates }: AdminPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -43,6 +53,8 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
   const [loginError, setLoginError] = useState("");
   const [showContactsEdit, setShowContactsEdit] = useState(false);
   const [editedContacts, setEditedContacts] = useState(contacts);
+  const [showCertificatesEdit, setShowCertificatesEdit] = useState(false);
+  const [editedCertificates, setEditedCertificates] = useState(certificates);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [masterKey, setMasterKey] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -190,6 +202,7 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
     setAuthToken(null);
     setShowAddForm(false);
     setShowContactsEdit(false);
+    setShowCertificatesEdit(false);
     setIsOpen(false);
     localStorage.removeItem('admin_token');
   };
@@ -317,6 +330,31 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
     }
   };
 
+  const handleSaveCertificates = async () => {
+    try {
+      const response = await fetch(certificatesApiUrl, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify(editedCertificates)
+      });
+
+      if (response.ok) {
+        onUpdateCertificates(editedCertificates);
+        onRefreshCertificates();
+        setShowCertificatesEdit(false);
+        alert("Сертификаты обновлены");
+      } else {
+        alert("Ошибка при обновлении сертификатов");
+      }
+    } catch (error) {
+      console.error("Error updating certificates:", error);
+      alert("Ошибка при обновлении сертификатов");
+    }
+  };
+
   if (!isOpen) {
     return null;
   }
@@ -362,7 +400,7 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
               onForgotPassword={() => setShowPasswordReset(true)}
             />
           )
-        ) : !showAddForm && !showContactsEdit ? (
+        ) : !showAddForm && !showContactsEdit && !showCertificatesEdit ? (
           <>
             <AdminMenu
               contacts={contacts}
@@ -370,6 +408,10 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
               onEditContacts={() => {
                 setEditedContacts(contacts);
                 setShowContactsEdit(true);
+              }}
+              onEditCertificates={() => {
+                setEditedCertificates(certificates);
+                setShowCertificatesEdit(true);
               }}
               onLogout={handleLogout}
             />
@@ -393,6 +435,13 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
             setEditedContacts={setEditedContacts}
             onSave={handleSaveContacts}
             onCancel={() => setShowContactsEdit(false)}
+          />
+        ) : showCertificatesEdit ? (
+          <CertificatesEditForm
+            editedCertificates={editedCertificates}
+            setEditedCertificates={setEditedCertificates}
+            onSave={handleSaveCertificates}
+            onCancel={() => setShowCertificatesEdit(false)}
           />
         ) : (
           <TestimonialAddForm

@@ -11,10 +11,11 @@ interface AdminMenuProps {
   contacts: Contacts;
   onAddTestimonial: () => void;
   onEditContacts: () => void;
+  onEditCertificates: () => void;
   onLogout: () => void;
 }
 
-const AdminMenu = ({ contacts, onAddTestimonial, onEditContacts, onLogout }: AdminMenuProps) => {
+const AdminMenu = ({ contacts, onAddTestimonial, onEditContacts, onEditCertificates, onLogout }: AdminMenuProps) => {
   return (
     <div className="space-y-4">
       <Button onClick={onAddTestimonial} className="w-full">
@@ -24,6 +25,10 @@ const AdminMenu = ({ contacts, onAddTestimonial, onEditContacts, onLogout }: Adm
       <Button onClick={onEditContacts} variant="outline" className="w-full">
         <Icon name="Settings" size={20} className="mr-2" />
         Изменить контакты
+      </Button>
+      <Button onClick={onEditCertificates} variant="outline" className="w-full">
+        <Icon name="Award" size={20} className="mr-2" />
+        Изменить сертификаты
       </Button>
       <Button onClick={onLogout} variant="outline" className="w-full">
         Выход

@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS certificates (
+  id INTEGER PRIMARY KEY,
+  skolkovo_url TEXT DEFAULT '',
+  compliance_url TEXT DEFAULT '',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
