@@ -132,7 +132,7 @@ const Index = () => {
                       {contacts.email}
                     </span>
                   </div>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 lg:pl-8">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Адрес</span>
                     <span className="font-bold text-white text-base whitespace-nowrap">{contacts.address}</span>
                   </div>
