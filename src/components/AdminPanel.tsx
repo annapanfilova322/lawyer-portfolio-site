@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
+import LoginForm from "@/components/admin/LoginForm";
+import PasswordResetForm from "@/components/admin/PasswordResetForm";
+import AdminMenu from "@/components/admin/AdminMenu";
+import ContactsEditForm from "@/components/admin/ContactsEditForm";
+import TestimonialAddForm from "@/components/admin/TestimonialAddForm";
+import TestimonialList from "@/components/admin/TestimonialList";
 
 interface Testimonial {
   id?: number;
@@ -59,8 +64,6 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
     window.addEventListener('openAdminPanel', handleOpenAdmin);
     return () => window.removeEventListener('openAdminPanel', handleOpenAdmin);
   }, []);
-
-
 
   const verifyToken = async (token: string) => {
     try {
@@ -296,276 +299,69 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
 
         {!isAuthenticated ? (
           showPasswordReset ? (
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-slate-900 mb-4">Смена пароля</h3>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Мастер-ключ</label>
-                <input
-                  type="text"
-                  value={masterKey}
-                  onChange={(e) => setMasterKey(e.target.value)}
-                  placeholder="Введите мастер-ключ"
-                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Новый пароль</label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Введите новый пароль"
-                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Повторите новый пароль</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Повторите новый пароль"
-                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-                />
-              </div>
-              {passwordResetError && (
-                <p className="text-red-600 text-sm">{passwordResetError}</p>
-              )}
-              <div className="flex gap-3">
-                <Button onClick={handlePasswordReset} className="flex-1">
-                  Изменить пароль
-                </Button>
-                <Button onClick={() => {
-                  setShowPasswordReset(false);
-                  setMasterKey("");
-                  setNewPassword("");
-                  setConfirmPassword("");
-                  setPasswordResetError("");
-                }} variant="outline" className="flex-1">
-                  Отмена
-                </Button>
-              </div>
-            </div>
+            <PasswordResetForm
+              masterKey={masterKey}
+              setMasterKey={setMasterKey}
+              newPassword={newPassword}
+              setNewPassword={setNewPassword}
+              confirmPassword={confirmPassword}
+              setConfirmPassword={setConfirmPassword}
+              passwordResetError={passwordResetError}
+              onPasswordReset={handlePasswordReset}
+              onCancel={() => {
+                setShowPasswordReset(false);
+                setMasterKey("");
+                setNewPassword("");
+                setConfirmPassword("");
+                setPasswordResetError("");
+              }}
+            />
           ) : (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Пароль</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-                  placeholder="Введите пароль"
-                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-                />
-                {loginError && (
-                  <p className="text-red-600 text-sm mt-2">{loginError}</p>
-                )}
-              </div>
-              <Button onClick={handleLogin} className="w-full">
-                Войти
-              </Button>
-              <button
-                onClick={() => setShowPasswordReset(true)}
-                className="text-xs text-slate-500 hover:text-slate-700 underline w-full text-center"
-              >
-                Забыли пароль?
-              </button>
-              <div className="text-xs text-slate-500 text-center mt-4">
-                Защита: JWT токены, rate limiting (5 попыток)
-              </div>
-            </div>
+            <LoginForm
+              password={password}
+              setPassword={setPassword}
+              loginError={loginError}
+              onLogin={handleLogin}
+              onForgotPassword={() => setShowPasswordReset(true)}
+            />
           )
         ) : !showAddForm && !showContactsEdit ? (
-          <div className="space-y-4">
-            <Button onClick={() => setShowAddForm(true)} className="w-full">
-              <Icon name="Plus" size={20} className="mr-2" />
-              Добавить отзыв
-            </Button>
-            <Button onClick={() => {
-              setEditedContacts(contacts);
-              setShowContactsEdit(true);
-            }} variant="outline" className="w-full">
-              <Icon name="Settings" size={20} className="mr-2" />
-              Изменить контакты
-            </Button>
-            <Button onClick={handleLogout} variant="outline" className="w-full">
-              Выход
-            </Button>
-
-            <div className="border-t pt-4 mt-4">
-              <h3 className="font-bold text-lg mb-4">Все отзывы ({testimonials.length})</h3>
-              <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                {testimonials.map((testimonial, index) => (
-                  <div key={testimonial.id || index} className="border border-slate-200 p-4 rounded space-y-3">
-                    {editingIndex === index ? (
-                      <>
-                        <input
-                          type="text"
-                          value={testimonial.company}
-                          onChange={(e) => handleFieldChange(index, "company", e.target.value)}
-                          className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-                          placeholder="Название компании"
-                        />
-                        <input
-                          type="text"
-                          value={testimonial.letterUrl}
-                          onChange={(e) => handleFieldChange(index, "letterUrl", e.target.value)}
-                          className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-                          placeholder="Ссылка на файл"
-                        />
-                        <div className="flex gap-2">
-                          <Button onClick={() => handleUpdateTestimonial(testimonial)} size="sm">
-                            Сохранить
-                          </Button>
-                          <Button onClick={() => setEditingIndex(null)} variant="outline" size="sm">
-                            Отмена
-                          </Button>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div>
-                          <p className="font-semibold text-slate-900">{testimonial.company}</p>
-                          {testimonial.letterUrl ? (
-                            <a 
-                              href={testimonial.letterUrl} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-block mt-2"
-                            >
-                              <button className="px-4 py-2 bg-mint text-slate-900 text-xs font-semibold rounded-md hover:bg-mint/90 transition-colors shadow-sm">
-                                Открыть отзыв
-                              </button>
-                            </a>
-                          ) : (
-                            <button className="px-4 py-2 bg-mint text-slate-900 text-xs font-semibold rounded-md hover:bg-mint/90 transition-colors shadow-sm mt-2">
-                              Открыть отзыв
-                            </button>
-                          )}
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => setEditingIndex(index)}
-                            variant="outline"
-                            size="sm"
-                          >
-                            <Icon name="Edit" size={16} className="mr-1" />
-                            Редактировать
-                          </Button>
-                          <Button
-                            onClick={() => testimonial.id && handleDeleteTestimonial(testimonial.id)}
-                            variant="destructive"
-                            size="sm"
-                          >
-                            <Icon name="Trash2" size={16} className="mr-1" />
-                            Удалить
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
+          <>
+            <AdminMenu
+              contacts={contacts}
+              onAddTestimonial={() => setShowAddForm(true)}
+              onEditContacts={() => {
+                setEditedContacts(contacts);
+                setShowContactsEdit(true);
+              }}
+              onLogout={handleLogout}
+            />
+            <div className="mt-6 pt-6 border-t border-slate-200">
+              <TestimonialList
+                testimonials={testimonials}
+                editingIndex={editingIndex}
+                onEdit={(index) => setEditingIndex(index)}
+                onSave={handleUpdateTestimonial}
+                onCancel={() => setEditingIndex(null)}
+                onDelete={handleDeleteTestimonial}
+                onFieldChange={handleFieldChange}
+              />
             </div>
-          </div>
+          </>
         ) : showContactsEdit ? (
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-bold text-lg mb-4">Изменить контактные данные</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Телефон *
-                  </label>
-                  <input
-                    type="text"
-                    value={editedContacts.phone}
-                    onChange={(e) => setEditedContacts({ ...editedContacts, phone: e.target.value })}
-                    placeholder="+7 (999) 123-45-67"
-                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    value={editedContacts.email}
-                    onChange={(e) => setEditedContacts({ ...editedContacts, email: e.target.value })}
-                    placeholder="lawyer@example.ru"
-                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Адрес *
-                  </label>
-                  <input
-                    type="text"
-                    value={editedContacts.address}
-                    onChange={(e) => setEditedContacts({ ...editedContacts, address: e.target.value })}
-                    placeholder="г. Санкт-Петербург"
-                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-                  />
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                  <Button onClick={handleSaveContacts} className="flex-1">
-                    Сохранить
-                  </Button>
-                  <Button onClick={() => setShowContactsEdit(false)} variant="outline" className="flex-1">
-                    Отмена
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <ContactsEditForm
+            editedContacts={editedContacts}
+            setEditedContacts={setEditedContacts}
+            onSave={handleSaveContacts}
+            onCancel={() => setShowContactsEdit(false)}
+          />
         ) : (
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-bold text-lg mb-4">Добавить новый отзыв</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Компания *
-                  </label>
-                  <input
-                    type="text"
-                    value={newTestimonial.company}
-                    onChange={(e) => setNewTestimonial({ ...newTestimonial, company: e.target.value })}
-                    placeholder='Например: ООО "Северная Корона"'
-                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Ссылка на благодарственное письмо (необязательно)
-                  </label>
-                  <input
-                    type="url"
-                    value={newTestimonial.letterUrl}
-                    onChange={(e) => setNewTestimonial({ ...newTestimonial, letterUrl: e.target.value })}
-                    placeholder="https://drive.google.com/file/d/..."
-                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                  <Button onClick={handlePublishTestimonial} className="flex-1">
-                    Опубликовать
-                  </Button>
-                  <Button onClick={() => setShowAddForm(false)} variant="outline" className="flex-1">
-                    Отмена
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <TestimonialAddForm
+            newTestimonial={newTestimonial}
+            setNewTestimonial={setNewTestimonial}
+            onPublish={handlePublishTestimonial}
+            onCancel={() => setShowAddForm(false)}
+          />
         )}
       </div>
     </div>
