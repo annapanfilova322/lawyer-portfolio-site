@@ -9,7 +9,11 @@ interface TestimonialCarouselProps {
 }
 
 const TestimonialCarousel = ({ testimonials }: TestimonialCarouselProps) => {
-  const sortedTestimonials = [...testimonials].reverse();
+  const sortedTestimonials = [...testimonials].sort((a, b) => {
+    const idA = a.id || 0;
+    const idB = b.id || 0;
+    return idB - idA;
+  });
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -49,10 +53,10 @@ const TestimonialCarousel = ({ testimonials }: TestimonialCarouselProps) => {
                         </div>
                       </a>
                     ) : (
-                      <div className="w-32 h-40 border-2 border-slate-200 rounded-lg flex items-center justify-center bg-slate-50">
-                        <span className="text-xs text-slate-400 text-center px-2">
-                          Нет письма
-                        </span>
+                      <div className="w-32 h-40 flex items-center justify-center">
+                        <button className="px-4 py-2 bg-mint text-slate-900 text-xs font-semibold rounded-md hover:bg-mint/90 transition-colors shadow-sm">
+                          Открыть отзыв
+                        </button>
                       </div>
                     )}
                   </div>
