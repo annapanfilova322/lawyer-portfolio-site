@@ -3,7 +3,6 @@ import Icon from "@/components/ui/icon";
 import { useState, useEffect } from "react";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 import AdminPanel from "@/components/AdminPanel";
-import MobileViewToggle from "@/components/MobileViewToggle";
 
 const Index = () => {
   const [showContactModal, setShowContactModal] = useState(false);
@@ -52,7 +51,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <MobileViewToggle />
       <section 
         className="min-h-screen flex items-start py-20 px-4 relative overflow-hidden"
         style={{
@@ -72,11 +70,14 @@ const Index = () => {
                 </h1>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight" style={{ fontFamily: "'Miama Nueva', cursive", color: '#c0f0e0' }}>
                   Панфилова А<span 
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       const event = new CustomEvent('openAdminPanel');
                       window.dispatchEvent(event);
                     }}
-                    className="cursor-default"
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                    role="button"
+                    tabIndex={0}
                   >н</span>на <span className="text-2xl md:text-3xl lg:text-4xl">& Co</span>
                 </h2>
               </div>

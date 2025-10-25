@@ -43,6 +43,34 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
     return () => window.removeEventListener('openAdminPanel', handleOpenAdmin);
   }, []);
 
+  useEffect(() => {
+    const keySequence: string[] = [];
+    const SECRET_KEYS = ['Control', 'Shift', 'A'];
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      keySequence.push(e.key);
+      
+      if (keySequence.length > SECRET_KEYS.length) {
+        keySequence.shift();
+      }
+
+      const last3 = keySequence.slice(-3);
+      if (
+        last3.length === 3 &&
+        last3[0] === 'Control' &&
+        last3[1] === 'Shift' &&
+        last3[2] === 'A'
+      ) {
+        e.preventDefault();
+        setIsOpen(true);
+        keySequence.length = 0;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const verifyToken = async (token: string) => {
     try {
       const response = await fetch(AUTH_API_URL, {
