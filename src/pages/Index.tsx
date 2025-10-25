@@ -123,15 +123,15 @@ const Index = () => {
                 <div className="grid sm:grid-cols-3 gap-6">
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Телефон</span>
-                    <a href={`tel:${contacts.phone.replace(/[^\d+]/g, '')}`} className="hover:text-mint transition-colors font-bold text-white text-lg">
+                    <span className="font-bold text-white text-lg">
                       {contacts.phone}
-                    </a>
+                    </span>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Email</span>
-                    <a href={`mailto:${contacts.email}`} className="hover:text-mint transition-colors font-bold text-white text-base break-all">
+                    <span className="font-bold text-white text-base break-all">
                       {contacts.email}
-                    </a>
+                    </span>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Адрес</span>
@@ -169,7 +169,7 @@ const Index = () => {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
             <div className="space-y-2">
               <p className="text-sm font-bold tracking-widest uppercase">
-                © 2025 Панфилова А<span 
+                © 2025 П<span 
                   onClick={(e) => {
                     e.preventDefault();
                     const event = new CustomEvent('openAdminPanel');
@@ -178,7 +178,7 @@ const Index = () => {
                   className="cursor-default"
                   role="button"
                   tabIndex={0}
-                >н</span>на
+                >а</span>нфилова Анна
               </p>
               <p className="text-xs text-white/60 font-medium">
                 Лицензия адвоката № 77/123456

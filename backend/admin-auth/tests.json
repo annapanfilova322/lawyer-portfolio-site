@@ -26,6 +26,28 @@
         "error": "string"
       },
       "bodyMatcher": "partial"
+    },
+    {
+      "name": "PUT with wrong master key returns 401",
+      "method": "PUT",
+      "path": "/",
+      "body": {"master_key": "wrong", "new_password": "newpass123"},
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "PUT with correct master key returns 200",
+      "method": "PUT",
+      "path": "/",
+      "body": {"master_key": "K7#m@nPq$vR2!xL", "new_password": "newpass123"},
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
     }
   ]
 }

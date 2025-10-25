@@ -38,6 +38,11 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
   const [loginError, setLoginError] = useState("");
   const [showContactsEdit, setShowContactsEdit] = useState(false);
   const [editedContacts, setEditedContacts] = useState(contacts);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [masterKey, setMasterKey] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordResetError, setPasswordResetError] = useState("");
 
   useEffect(() => {
     const storedToken = localStorage.getItem('admin_token');
@@ -105,6 +110,51 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
     } catch (error) {
       console.error('Login error:', error);
       setLoginError("Ошибка подключения к серверу");
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    setPasswordResetError("");
+
+    if (masterKey !== "K7#m@nPq$vR2!xL") {
+      setPasswordResetError("Неверный мастер-ключ");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordResetError("Пароль должен быть не менее 6 символов");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordResetError("Пароли не совпадают");
+      return;
+    }
+
+    try {
+      const response = await fetch(AUTH_API_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          master_key: masterKey,
+          new_password: newPassword 
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Пароль успешно изменен");
+        setShowPasswordReset(false);
+        setMasterKey("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        setPasswordResetError(data.error || "Ошибка смены пароля");
+      }
+    } catch (error) {
+      console.error('Password reset error:', error);
+      setPasswordResetError("Ошибка подключения к серверу");
     }
   };
 
@@ -245,28 +295,87 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpd
         </div>
 
         {!isAuthenticated ? (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Пароль</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-                placeholder="Введите пароль"
-                className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
-              />
-              {loginError && (
-                <p className="text-red-600 text-sm mt-2">{loginError}</p>
+          showPasswordReset ? (
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-slate-900 mb-4">Смена пароля</h3>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Мастер-ключ</label>
+                <input
+                  type="text"
+                  value={masterKey}
+                  onChange={(e) => setMasterKey(e.target.value)}
+                  placeholder="Введите мастер-ключ"
+                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Новый пароль</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Введите новый пароль"
+                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Повторите новый пароль</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Повторите новый пароль"
+                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
+                />
+              </div>
+              {passwordResetError && (
+                <p className="text-red-600 text-sm">{passwordResetError}</p>
               )}
+              <div className="flex gap-3">
+                <Button onClick={handlePasswordReset} className="flex-1">
+                  Изменить пароль
+                </Button>
+                <Button onClick={() => {
+                  setShowPasswordReset(false);
+                  setMasterKey("");
+                  setNewPassword("");
+                  setConfirmPassword("");
+                  setPasswordResetError("");
+                }} variant="outline" className="flex-1">
+                  Отмена
+                </Button>
+              </div>
             </div>
-            <Button onClick={handleLogin} className="w-full">
-              Войти
-            </Button>
-            <div className="text-xs text-slate-500 text-center mt-4">
-              Защита: JWT токены, rate limiting (5 попыток)
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Пароль</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleLogin()}
+                  placeholder="Введите пароль"
+                  className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
+                />
+                {loginError && (
+                  <p className="text-red-600 text-sm mt-2">{loginError}</p>
+                )}
+              </div>
+              <Button onClick={handleLogin} className="w-full">
+                Войти
+              </Button>
+              <button
+                onClick={() => setShowPasswordReset(true)}
+                className="text-xs text-slate-500 hover:text-slate-700 underline w-full text-center"
+              >
+                Забыли пароль?
+              </button>
+              <div className="text-xs text-slate-500 text-center mt-4">
+                Защита: JWT токены, rate limiting (5 попыток)
+              </div>
             </div>
-          </div>
+          )
         ) : !showAddForm && !showContactsEdit ? (
           <div className="space-y-4">
             <Button onClick={() => setShowAddForm(true)} className="w-full">
