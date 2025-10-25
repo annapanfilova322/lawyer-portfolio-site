@@ -17,7 +17,7 @@ const Index = () => {
       icon: "FileText"
     },
     {
-      title: "Недвижимость. Правовой комплаенс сделок. Коммерция, инвестиции",
+      title: "Недвижимость. Жилая/коммерция, подбор, оценка рисков, сопровождение сделок",
       icon: "Building2"
     }
   ];
@@ -99,18 +99,12 @@ const Index = () => {
                 </p>
               </div>
 
-              <div className="space-y-6 pt-4">
-                <p className="text-base md:text-lg text-mint">
-                  Недвижимость. Жилая/коммерция, подбор, оценка рисков, сопровождение сделок
-                </p>
-
-                <div className="space-y-6">
-                  {expertise.map((item, index) => (
-                    <p key={index} className="text-base md:text-lg text-mint">
-                      {item.title}
-                    </p>
-                  ))}
-                </div>
+              <div className="space-y-6">
+                {expertise.map((item, index) => (
+                  <p key={index} className="text-base md:text-lg text-mint">
+                    {item.title}
+                  </p>
+                ))}
               </div>
 
               <div className="h-px bg-gradient-to-r from-mint/50 via-mint/20 to-transparent my-8"></div>
