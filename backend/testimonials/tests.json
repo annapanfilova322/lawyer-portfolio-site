@@ -1,0 +1,29 @@
+{
+  "tests": [
+    {
+      "name": "Get all testimonials",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "testimonials": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create testimonial",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "company": "Test Company",
+        "letterUrl": "https://example.com/test.pdf"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "id": "number",
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

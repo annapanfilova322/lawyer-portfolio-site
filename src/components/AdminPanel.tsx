@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
 
 interface Testimonial {
+  id?: number;
   company: string;
   letterUrl: string;
 }
@@ -10,9 +11,11 @@ interface Testimonial {
 interface AdminPanelProps {
   testimonials: Testimonial[];
   onUpdate: (testimonials: Testimonial[]) => void;
+  apiUrl: string;
+  onRefresh: () => void;
 }
 
-const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
+const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -40,13 +43,32 @@ const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
     }
   };
 
-  const handlePublishTestimonial = () => {
-    if (newTestimonial.company.trim()) {
-      onUpdate([...testimonials, { company: newTestimonial.company, letterUrl: newTestimonial.letterUrl }]);
-      setNewTestimonial({ company: "", letterUrl: "", file: null });
-      setShowAddForm(false);
-    } else {
+  const handlePublishTestimonial = async () => {
+    if (!newTestimonial.company.trim()) {
       alert("Пожалуйста, заполните название компании");
+      return;
+    }
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          company: newTestimonial.company,
+          letterUrl: newTestimonial.letterUrl
+        })
+      });
+
+      if (response.ok) {
+        setNewTestimonial({ company: "", letterUrl: "", file: null });
+        setShowAddForm(false);
+        onRefresh();
+      } else {
+        alert("Ошибка при добавлении отзыва");
+      }
+    } catch (error) {
+      console.error("Error adding testimonial:", error);
+      alert("Ошибка при добавлении отзыва");
     }
   };
 
@@ -56,14 +78,46 @@ const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
     setIsOpen(false);
   };
 
-  const handleDeleteTestimonial = (index: number) => {
-    if (confirm("Вы уверены, что хотите удалить этот отзыв?")) {
-      const updated = testimonials.filter((_, i) => i !== index);
-      onUpdate(updated);
+  const handleDeleteTestimonial = async (id: number) => {
+    if (!confirm("Вы уверены, что хотите удалить этот отзыв?")) return;
+
+    try {
+      const response = await fetch(`${apiUrl}?id=${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        onRefresh();
+      } else {
+        alert("Ошибка при удалении отзыва");
+      }
+    } catch (error) {
+      console.error("Error deleting testimonial:", error);
+      alert("Ошибка при удалении отзыва");
     }
   };
 
-  const handleUpdateTestimonial = (index: number, field: string, value: string) => {
+  const handleUpdateTestimonial = async (testimonial: Testimonial) => {
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(testimonial)
+      });
+
+      if (response.ok) {
+        setEditingIndex(null);
+        onRefresh();
+      } else {
+        alert("Ошибка при обновлении отзыва");
+      }
+    } catch (error) {
+      console.error("Error updating testimonial:", error);
+      alert("Ошибка при обновлении отзыва");
+    }
+  };
+
+  const handleFieldChange = (index: number, field: string, value: string) => {
     const updated = [...testimonials];
     updated[index] = { ...updated[index], [field]: value };
     onUpdate(updated);
@@ -125,25 +179,25 @@ const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
               <h3 className="font-bold text-lg mb-4">Все отзывы ({testimonials.length})</h3>
               <div className="space-y-3 max-h-[400px] overflow-y-auto">
                 {testimonials.map((testimonial, index) => (
-                  <div key={index} className="border border-slate-200 p-4 rounded space-y-3">
+                  <div key={testimonial.id || index} className="border border-slate-200 p-4 rounded space-y-3">
                     {editingIndex === index ? (
                       <>
                         <input
                           type="text"
                           value={testimonial.company}
-                          onChange={(e) => handleUpdateTestimonial(index, "company", e.target.value)}
+                          onChange={(e) => handleFieldChange(index, "company", e.target.value)}
                           className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
                           placeholder="Название компании"
                         />
                         <input
                           type="text"
                           value={testimonial.letterUrl}
-                          onChange={(e) => handleUpdateTestimonial(index, "letterUrl", e.target.value)}
+                          onChange={(e) => handleFieldChange(index, "letterUrl", e.target.value)}
                           className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-amber-500"
                           placeholder="Ссылка на файл"
                         />
                         <div className="flex gap-2">
-                          <Button onClick={() => setEditingIndex(null)} size="sm">
+                          <Button onClick={() => handleUpdateTestimonial(testimonial)} size="sm">
                             Сохранить
                           </Button>
                           <Button onClick={() => setEditingIndex(null)} variant="outline" size="sm">
@@ -169,7 +223,7 @@ const AdminPanel = ({ testimonials, onUpdate }: AdminPanelProps) => {
                             Редактировать
                           </Button>
                           <Button
-                            onClick={() => handleDeleteTestimonial(index)}
+                            onClick={() => testimonial.id && handleDeleteTestimonial(testimonial.id)}
                             variant="destructive"
                             size="sm"
                           >

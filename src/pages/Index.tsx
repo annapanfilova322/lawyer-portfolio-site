@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Icon from "@/components/ui/icon";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 import AdminPanel from "@/components/AdminPanel";
 
@@ -22,44 +22,30 @@ const Index = () => {
     }
   ];
 
-  const [testimonials, setTestimonials] = useState([
-    {
-      company: "ООО \"Северная Корона\"",
-      letterUrl: ""
-    },
-    {
-      company: "АО \"Балтийские Инвестиции\"",
-      letterUrl: ""
-    },
-    {
-      company: "ПАО \"Невский Альянс\"",
-      letterUrl: ""
-    },
-    {
-      company: "ЗАО \"Петровский Капитал\"",
-      letterUrl: ""
-    },
-    {
-      company: "ООО \"Финансовая Группа Рубикон\"",
-      letterUrl: ""
-    },
-    {
-      company: "АО \"Торговый Дом Эверест\"",
-      letterUrl: ""
-    },
-    {
-      company: "ООО \"Стройинвест Холдинг\"",
-      letterUrl: ""
-    },
-    {
-      company: "ПАО \"Промышленная Корпорация\"",
-      letterUrl: ""
-    },
-    {
-      company: "ООО \"Юридическая Компания Правовед\"",
-      letterUrl: ""
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const API_URL = 'https://functions.poehali.dev/ade328f9-1341-4721-acd7-6241e3ae8c1a';
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setTestimonials(data.testimonials || []);
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
+  const handleUpdateTestimonials = (updatedTestimonials: any[]) => {
+    setTestimonials(updatedTestimonials);
+  };
 
 
 
@@ -144,7 +130,13 @@ const Index = () => {
               </h2>
             </div>
 
-            <TestimonialCarousel testimonials={testimonials} />
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-slate-500">Загрузка отзывов...</p>
+              </div>
+            ) : (
+              <TestimonialCarousel testimonials={testimonials} />
+            )}
           </div>
         </div>
       </section>
@@ -165,7 +157,12 @@ const Index = () => {
         </div>
       </footer>
 
-      <AdminPanel testimonials={testimonials} onUpdate={setTestimonials} />
+      <AdminPanel 
+        testimonials={testimonials} 
+        onUpdate={handleUpdateTestimonials}
+        apiUrl={API_URL}
+        onRefresh={fetchTestimonials}
+      />
 
       {showContactModal && (
         <div 
