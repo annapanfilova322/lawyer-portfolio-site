@@ -152,7 +152,7 @@ const Index = () => {
                     const event = new CustomEvent('openAdminPanel');
                     window.dispatchEvent(event);
                   }}
-                  className="cursor-pointer"
+                  className="cursor-default"
                   role="button"
                   tabIndex={0}
                 >н</span>на
