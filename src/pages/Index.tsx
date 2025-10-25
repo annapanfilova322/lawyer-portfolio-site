@@ -94,7 +94,7 @@ const Index = () => {
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight" style={{ fontFamily: "'Miama Nueva', cursive", color: '#c0f0e0' }}>
                   Панфилова Анна <span className="text-2xl md:text-3xl lg:text-4xl">& Co</span>
                 </h2>
-                <p className="text-sm text-mint/80">
+                <p className="text-sm text-mint/80 pt-4">
                   Член адвокатской палаты г.Санкт-Петербурга с 2013 года
                 </p>
               </div>
