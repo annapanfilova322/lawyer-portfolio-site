@@ -8,16 +8,26 @@ interface Testimonial {
   letterUrl: string;
 }
 
+interface Contacts {
+  phone: string;
+  email: string;
+  address: string;
+}
+
 interface AdminPanelProps {
   testimonials: Testimonial[];
   onUpdate: (testimonials: Testimonial[]) => void;
   apiUrl: string;
   onRefresh: () => void;
+  contacts: Contacts;
+  onUpdateContacts: (contacts: Contacts) => void;
+  contactsApiUrl: string;
+  onRefreshContacts: () => void;
 }
 
 const AUTH_API_URL = 'https://functions.poehali.dev/77abf354-4102-47a5-ad5e-d5290b704fcd';
 
-const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelProps) => {
+const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpdateContacts, contactsApiUrl, onRefreshContacts }: AdminPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -26,6 +36,8 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
   const [newTestimonial, setNewTestimonial] = useState({ company: "", letterUrl: "" });
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [loginError, setLoginError] = useState("");
+  const [showContactsEdit, setShowContactsEdit] = useState(false);
+  const [editedContacts, setEditedContacts] = useState(contacts);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('admin_token');
@@ -190,6 +202,31 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
     onUpdate(updated);
   };
 
+  const handleSaveContacts = async () => {
+    try {
+      const response = await fetch(contactsApiUrl, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify(editedContacts)
+      });
+
+      if (response.ok) {
+        onUpdateContacts(editedContacts);
+        onRefreshContacts();
+        setShowContactsEdit(false);
+        alert("Контактные данные обновлены");
+      } else {
+        alert("Ошибка при обновлении контактов");
+      }
+    } catch (error) {
+      console.error("Error updating contacts:", error);
+      alert("Ошибка при обновлении контактов");
+    }
+  };
+
   if (!isOpen) {
     return null;
   }
@@ -230,11 +267,18 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
               Защита: JWT токены, rate limiting (5 попыток)
             </div>
           </div>
-        ) : !showAddForm ? (
+        ) : !showAddForm && !showContactsEdit ? (
           <div className="space-y-4">
             <Button onClick={() => setShowAddForm(true)} className="w-full">
               <Icon name="Plus" size={20} className="mr-2" />
               Добавить отзыв
+            </Button>
+            <Button onClick={() => {
+              setEditedContacts(contacts);
+              setShowContactsEdit(true);
+            }} variant="outline" className="w-full">
+              <Icon name="Settings" size={20} className="mr-2" />
+              Изменить контакты
             </Button>
             <Button onClick={handleLogout} variant="outline" className="w-full">
               Выход
@@ -313,6 +357,61 @@ const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh }: AdminPanelPro
                     )}
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        ) : showContactsEdit ? (
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-bold text-lg mb-4">Изменить контактные данные</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Телефон *
+                  </label>
+                  <input
+                    type="text"
+                    value={editedContacts.phone}
+                    onChange={(e) => setEditedContacts({ ...editedContacts, phone: e.target.value })}
+                    placeholder="+7 (999) 123-45-67"
+                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    value={editedContacts.email}
+                    onChange={(e) => setEditedContacts({ ...editedContacts, email: e.target.value })}
+                    placeholder="lawyer@example.ru"
+                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Адрес *
+                  </label>
+                  <input
+                    type="text"
+                    value={editedContacts.address}
+                    onChange={(e) => setEditedContacts({ ...editedContacts, address: e.target.value })}
+                    placeholder="г. Санкт-Петербург"
+                    className="w-full px-4 py-2 border border-slate-300 rounded focus:outline-none focus:border-mint"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <Button onClick={handleSaveContacts} className="flex-1">
+                    Сохранить
+                  </Button>
+                  <Button onClick={() => setShowContactsEdit(false)} variant="outline" className="flex-1">
+                    Отмена
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

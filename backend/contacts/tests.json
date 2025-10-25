@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "Get contacts returns data",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "contacts": {
+          "phone": "string",
+          "email": "string",
+          "address": "string"
+        }
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

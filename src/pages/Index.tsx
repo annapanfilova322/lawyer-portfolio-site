@@ -24,11 +24,18 @@ const Index = () => {
 
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [contacts, setContacts] = useState({
+    phone: '+7 (999) 123-45-67',
+    email: 'lawyer@example.ru',
+    address: 'г. Санкт-Петербург'
+  });
 
   const API_URL = 'https://functions.poehali.dev/ade328f9-1341-4721-acd7-6241e3ae8c1a';
+  const CONTACTS_API_URL = 'https://functions.poehali.dev/3882a477-b6be-4f4b-8489-233902ce1866';
 
   useEffect(() => {
     fetchTestimonials();
+    fetchContacts();
   }, []);
 
   const fetchTestimonials = async () => {
@@ -43,8 +50,24 @@ const Index = () => {
     }
   };
 
+  const fetchContacts = async () => {
+    try {
+      const response = await fetch(CONTACTS_API_URL);
+      const data = await response.json();
+      if (data.contacts) {
+        setContacts(data.contacts);
+      }
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
+    }
+  };
+
   const handleUpdateTestimonials = (updatedTestimonials: any[]) => {
     setTestimonials(updatedTestimonials);
+  };
+
+  const handleUpdateContacts = (updatedContacts: any) => {
+    setContacts(updatedContacts);
   };
 
 
@@ -100,19 +123,19 @@ const Index = () => {
                 <div className="grid sm:grid-cols-3 gap-6">
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Телефон</span>
-                    <a href="tel:+79991234567" className="hover:text-mint transition-colors font-bold text-white text-lg">
-                      +7 (999) 123-45-67
+                    <a href={`tel:${contacts.phone.replace(/[^\d+]/g, '')}`} className="hover:text-mint transition-colors font-bold text-white text-lg">
+                      {contacts.phone}
                     </a>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Email</span>
-                    <a href="mailto:lawyer@example.ru" className="hover:text-mint transition-colors font-bold text-white text-base break-all">
-                      lawyer@example.ru
+                    <a href={`mailto:${contacts.email}`} className="hover:text-mint transition-colors font-bold text-white text-base break-all">
+                      {contacts.email}
                     </a>
                   </div>
                   <div className="flex flex-col gap-2">
                     <span className="text-slate-300 font-medium text-xs uppercase tracking-[0.15em]">Адрес</span>
-                    <span className="font-bold text-white text-base">г. Санкт-Петербург</span>
+                    <span className="font-bold text-white text-base">{contacts.address}</span>
                   </div>
                 </div>
               </div>
@@ -171,6 +194,10 @@ const Index = () => {
         onUpdate={handleUpdateTestimonials}
         apiUrl={API_URL}
         onRefresh={fetchTestimonials}
+        contacts={contacts}
+        onUpdateContacts={handleUpdateContacts}
+        contactsApiUrl={CONTACTS_API_URL}
+        onRefreshContacts={fetchContacts}
       />
 
       {showContactModal && (
