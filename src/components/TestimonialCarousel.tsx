@@ -9,22 +9,16 @@ interface TestimonialCarouselProps {
 }
 
 const TestimonialCarousel = ({ testimonials }: TestimonialCarouselProps) => {
-  const sortedTestimonials = [...testimonials].sort((a, b) => {
-    const idA = a.id || 0;
-    const idB = b.id || 0;
-    return idB - idA;
-  });
-
   return (
     <div className="max-w-4xl mx-auto">
       <h3 className="text-xl font-bold text-slate-900 mb-6">
-        Все отзывы ({sortedTestimonials.length})
+        Все отзывы ({testimonials.length})
       </h3>
       
       <div className="border-2 border-slate-200 rounded-lg overflow-hidden">
         <div className="max-h-[600px] overflow-y-auto">
           <div className="divide-y divide-slate-200">
-            {sortedTestimonials.map((testimonial, index) => (
+            {testimonials.map((testimonial, index) => (
               <div 
                 key={testimonial.id || index} 
                 className="p-6 hover:bg-slate-50 transition-colors"
