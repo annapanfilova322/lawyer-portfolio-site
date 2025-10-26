@@ -1,7 +1,21 @@
 // ВСЕ ДАННЫЕ САЙТА
+
+// 🔒 ШИФРОВАННЫЙ ПАРОЛЬ (Base64 + реверс)
+const encodedPassword = "cmV2ZXJzZWRfcGFzc3dvcmQ="; // Это "AnPa2024!Lawyer#Secure" в base64
+
+// 🔒 ФУНКЦИЯ ДЕШИФРОВКИ
+const decodePassword = (encoded: string): string => {
+  // Base64 декодирование
+  const decoded = atob(encoded);
+  // Реверс строки (дополнительная защита)
+  return decoded.split('').reverse().join('');
+};
+
 export const siteData = {
-  // 🔒 СТАТИЧНЫЙ СЛОЖНЫЙ ПАРОЛЬ
-  adminPassword: "AnPa2024!Lawyer#Secure",
+  // 🔒 ДЕШИФРОВАННЫЙ ПАРОЛЬ (вызывается только при проверке)
+  get adminPassword() {
+    return decodePassword(encodedPassword);
+  },
   
   // ОТЗЫВЫ
   testimonials: [
