@@ -1,7 +1,7 @@
 // ВСЕ ДАННЫЕ САЙТА
 export const siteData = {
-  // ПАРОЛЬ ДЛЯ АДМИНКИ
-  adminPassword: "admin123",
+  // 🔒 СТАТИЧНЫЙ СЛОЖНЫЙ ПАРОЛЬ
+  adminPassword: "AnPa2024!Lawyer#Secure",
   
   // ОТЗЫВЫ
   testimonials: [
