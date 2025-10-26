@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 import LoginForm from "@/components/admin/LoginForm";
-import PasswordResetForm from "@/components/admin/PasswordResetForm";
 import AdminMenu from "@/components/admin/AdminMenu";
 import ContactsEditForm from "@/components/admin/ContactsEditForm";
 import CertificatesEditForm from "@/components/admin/CertificatesEditForm";
@@ -47,11 +46,6 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
   const [editedContacts, setEditedContacts] = useState(contacts);
   const [showCertificatesEdit, setShowCertificatesEdit] = useState(false);
   const [editedCertificates, setEditedCertificates] = useState(certificates);
-  const [showPasswordReset, setShowPasswordReset] = useState(false);
-  const [masterKey, setMasterKey] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordResetError, setPasswordResetError] = useState("");
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockTime, setBlockTime] = useState(0);
@@ -67,6 +61,12 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
     if (blockedUntil && Date.now() < parseInt(blockedUntil)) {
       setIsBlocked(true);
       setBlockTime(parseInt(blockedUntil) - Date.now());
+    }
+
+    // Загружаем сохранённые попытки входа
+    const savedAttempts = localStorage.getItem('loginAttempts');
+    if (savedAttempts) {
+      setLoginAttempts(parseInt(savedAttempts));
     }
 
     window.addEventListener('openAdminPanel', handleOpenAdmin);
@@ -102,10 +102,8 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
 
     setLoginError("");
 
-    // Проверяем пароль из LocalStorage или из data.ts
-    const currentPassword = localStorage.getItem('adminPassword') || siteData.adminPassword;
-    
-    if (password === currentPassword) {
+    // 🔒 ПРОВЕРКА СТАТИЧНОГО ПАРОЛЯ
+    if (password === siteData.adminPassword) {
       setIsAuthenticated(true);
       setPassword("");
       setLoginAttempts(0);
@@ -125,36 +123,6 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
       } else {
         setLoginError(`Неверный пароль. Осталось попыток: ${5 - attempts}`);
       }
-    }
-  };
-
-  // 🔒 СМЕНА ПАРОЛЯ
-  const handlePasswordReset = () => {
-    setPasswordResetError("");
-
-    if (newPassword.length < 6) {
-      setPasswordResetError("Пароль должен быть не менее 6 символов");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setPasswordResetError("Пароли не совпадают");
-      return;
-    }
-
-    // ВАШ МАСТЕР-КЛЮЧ
-    if (masterKey === "K7#m@nPq$vR2!xL") {
-      // Сохраняем в LocalStorage
-      localStorage.setItem('adminPassword', newPassword);
-      siteData.adminPassword = newPassword;
-      alert("Пароль успешно изменен");
-      setShowPasswordReset(false);
-      setMasterKey("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setPasswordResetError("");
-    } else {
-      setPasswordResetError("Неверный мастер-ключ");
     }
   };
 
@@ -258,87 +226,14 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
         </div>
 
         {!isAuthenticated ? (
-          showPasswordReset ? (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-slate-900">Смена пароля</h3>
-              
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Мастер-ключ
-                  </label>
-                  <input
-                    type="password"
-                    value={masterKey}
-                    onChange={(e) => setMasterKey(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Введите мастер-ключ"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Новый пароль
-                  </label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Не менее 6 символов"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Подтвердите пароль
-                  </label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Повторите новый пароль"
-                  />
-                </div>
-              </div>
-
-              {passwordResetError && (
-                <p className="text-red-600 text-sm">{passwordResetError}</p>
-              )}
-
-              <div className="flex gap-3">
-                <button
-                  onClick={handlePasswordReset}
-                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-                >
-                  Сменить пароль
-                </button>
-                <button
-                  onClick={() => {
-                    setShowPasswordReset(false);
-                    setMasterKey("");
-                    setNewPassword("");
-                    setConfirmPassword("");
-                    setPasswordResetError("");
-                  }}
-                  className="flex-1 bg-slate-300 text-slate-700 py-2 px-4 rounded-md hover:bg-slate-400 transition-colors"
-                >
-                  Отмена
-                </button>
-              </div>
-            </div>
-          ) : (
-            <LoginForm
-              password={password}
-              setPassword={setPassword}
-              loginError={loginError}
-              onLogin={handleLogin}
-              onForgotPassword={() => setShowPasswordReset(true)}
-              isBlocked={isBlocked}
-              blockTime={blockTime}
-            />
-          )
+          <LoginForm
+            password={password}
+            setPassword={setPassword}
+            loginError={loginError}
+            onLogin={handleLogin}
+            isBlocked={isBlocked}
+            blockTime={blockTime}
+          />
         ) : !showAddForm && !showContactsEdit && !showCertificatesEdit ? (
           <>
             <AdminMenu
