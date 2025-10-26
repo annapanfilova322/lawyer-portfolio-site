@@ -5,7 +5,6 @@ interface LoginFormProps {
   setPassword: (value: string) => void;
   loginError: string;
   onLogin: () => void;
-  onForgotPassword: () => void;
   isBlocked?: boolean;
   blockTime?: number;
 }
@@ -15,7 +14,6 @@ const LoginForm = ({
   setPassword, 
   loginError, 
   onLogin, 
-  onForgotPassword, 
   isBlocked = false, 
   blockTime = 0 
 }: LoginFormProps) => {
@@ -61,27 +59,15 @@ const LoginForm = ({
         {isBlocked ? "Система заблокирована" : "Войти"}
       </Button>
       
-      <button
-        onClick={onForgotPassword}
-        disabled={isBlocked}
-        className={`text-xs underline w-full text-center ${
-          isBlocked 
-            ? "text-slate-400 cursor-not-allowed" 
-            : "text-slate-500 hover:text-slate-700"
-        }`}
-      >
-        Забыли пароль?
-      </button>
-      
       <div className="text-xs text-slate-500 text-center mt-4 space-y-1">
         {isBlocked ? (
           <p className="text-orange-600">
             ⚠️ Система заблокирована. Повторите через {formatTime(blockTime)}
           </p>
         ) : (
-          <p>Защита: rate limiting (5 попыток), блокировка на 30 минут</p>
+          <p>Защита: 5 попыток входа, блокировка на 30 минут</p>
         )}
-        <p>Текущая защита: {isBlocked ? "🔒 Заблокировано" : "✅ Активно"}</p>
+        <p>🔒 Статичный пароль, смена отключена</p>
       </div>
     </div>
   );
