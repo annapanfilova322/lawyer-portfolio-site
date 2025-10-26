@@ -47,6 +47,12 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
   const [editedContacts, setEditedContacts] = useState(contacts);
   const [showCertificatesEdit, setShowCertificatesEdit] = useState(false);
   const [editedCertificates, setEditedCertificates] = useState(certificates);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+const [masterKey, setMasterKey] = useState("");
+const [newPassword, setNewPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
+const [passwordResetError, setPasswordResetError] = useState("");
+  
 
   useEffect(() => {
     const handleOpenAdmin = () => {
@@ -68,6 +74,33 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
       setLoginError("Неверный пароль");
     }
   };
+  const handlePasswordReset = () => {
+  setPasswordResetError("");
+
+  if (newPassword.length < 6) {
+    setPasswordResetError("Пароль должен быть не менее 6 символов");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    setPasswordResetError("Пароли не совпадают");
+    return;
+  }
+
+  // ВАШ МАСТЕР-КЛЮЧ
+  if (masterKey === "K7#m@nPq$vR2!xL") {
+    // Обновляем пароль в данных
+    siteData.adminPassword = newPassword;
+    alert("Пароль успешно изменен");
+    setShowPasswordReset(false);
+    setMasterKey("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setPasswordResetError("");
+  } else {
+    setPasswordResetError("Неверный мастер-ключ");
+  }
+};
 
   // ДОБАВЛЕНИЕ ОТЗЫВА В ПАМЯТИ
   const handlePublishTestimonial = () => {
@@ -169,14 +202,86 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
         </div>
 
         {!isAuthenticated ? (
-          <LoginForm
-            password={password}
-            setPassword={setPassword}
-            loginError={loginError}
-            onLogin={handleLogin}
-            onForgotPassword={() => alert("Функция восстановления отключена")}
+  showPasswordReset ? (
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold text-slate-900">Смена пароля</h3>
+      
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Мастер-ключ
+          </label>
+          <input
+            type="password"
+            value={masterKey}
+            onChange={(e) => setMasterKey(e.target.value)}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Введите мастер-ключ"
           />
-        ) : !showAddForm && !showContactsEdit && !showCertificatesEdit ? (
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Новый пароль
+          </label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Не менее 6 символов"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Подтвердите пароль
+          </label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Повторите новый пароль"
+          />
+        </div>
+      </div>
+
+      {passwordResetError && (
+        <p className="text-red-600 text-sm">{passwordResetError}</p>
+      )}
+
+      <div className="flex gap-3">
+        <button
+          onClick={handlePasswordReset}
+          className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
+        >
+          Сменить пароль
+        </button>
+        <button
+          onClick={() => {
+            setShowPasswordReset(false);
+            setMasterKey("");
+            setNewPassword("");
+            setConfirmPassword("");
+            setPasswordResetError("");
+          }}
+          className="flex-1 bg-slate-300 text-slate-700 py-2 px-4 rounded-md hover:bg-slate-400 transition-colors"
+        >
+          Отмена
+        </button>
+      </div>
+    </div>
+  ) : (
+    <LoginForm
+      password={password}
+      setPassword={setPassword}
+      loginError={loginError}
+      onLogin={handleLogin}
+      onForgotPassword={() => setShowPasswordReset(true)}
+    />
+  )
+) : !showAddForm && !showContactsEdit && !showCertificatesEdit ? (
           <>
             <AdminMenu
               contacts={contacts}
