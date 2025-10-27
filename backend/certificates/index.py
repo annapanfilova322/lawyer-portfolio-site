@@ -32,18 +32,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         cur = conn.cursor()
         
         if method == 'GET':
-            cur.execute('SELECT skolkovo_url, compliance_url FROM certificates WHERE id = 1')
+            cur.execute('SELECT cert1_name, cert1_url, cert2_name, cert2_url, cert3_name, cert3_url FROM certificates WHERE id = 1')
             row = cur.fetchone()
             
             if row:
-                certificates = {
-                    'skolkovo': row[0] or '',
-                    'compliance': row[1] or ''
-                }
+                certificates = [
+                    {'name': row[0] or '', 'url': row[1] or ''},
+                    {'name': row[2] or '', 'url': row[3] or ''},
+                    {'name': row[4] or '', 'url': row[5] or ''}
+                ]
             else:
-                cur.execute("INSERT INTO certificates (id, skolkovo_url, compliance_url) VALUES (1, '', '')")
+                cur.execute("INSERT INTO certificates (id) VALUES (1)")
                 conn.commit()
-                certificates = {'skolkovo': '', 'compliance': ''}
+                certificates = [
+                    {'name': 'Сертификат Сколково', 'url': ''},
+                    {'name': 'Сертификат Комплаенс', 'url': ''},
+                    {'name': '', 'url': ''}
+                ]
             
             return {
                 'statusCode': 200,
@@ -56,13 +61,37 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         elif method == 'PUT':
-            body_data = json.loads(event.get('body', '{}'))
-            skolkovo = body_data.get('skolkovo', '')
-            compliance = body_data.get('compliance', '')
+            body_str = event.get('body', '[]')
+            body_data = json.loads(body_str) if body_str else []
+            
+            if not isinstance(body_data, list) or len(body_data) != 3:
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Expected array of 3 certificates'}),
+                    'isBase64Encoded': False
+                }
+            
+            cert1 = body_data[0]
+            cert2 = body_data[1]
+            cert3 = body_data[2]
             
             cur.execute(
-                "INSERT INTO certificates (id, skolkovo_url, compliance_url) VALUES (1, %s, %s) ON CONFLICT (id) DO UPDATE SET skolkovo_url = %s, compliance_url = %s",
-                (skolkovo, compliance, skolkovo, compliance)
+                """INSERT INTO certificates (id, cert1_name, cert1_url, cert2_name, cert2_url, cert3_name, cert3_url) 
+                   VALUES (1, %s, %s, %s, %s, %s, %s) 
+                   ON CONFLICT (id) DO UPDATE SET 
+                   cert1_name = %s, cert1_url = %s, 
+                   cert2_name = %s, cert2_url = %s, 
+                   cert3_name = %s, cert3_url = %s""",
+                (cert1.get('name', ''), cert1.get('url', ''),
+                 cert2.get('name', ''), cert2.get('url', ''),
+                 cert3.get('name', ''), cert3.get('url', ''),
+                 cert1.get('name', ''), cert1.get('url', ''),
+                 cert2.get('name', ''), cert2.get('url', ''),
+                 cert3.get('name', ''), cert3.get('url', ''))
             )
             conn.commit()
             
