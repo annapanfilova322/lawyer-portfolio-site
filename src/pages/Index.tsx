@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 import AdminPanel from "@/components/AdminPanel";
 import { siteData } from "@/data";
-//import { supabase } from "@/lib/supabase"; // ИМПОРТИРУЕМ SUPABASE
+import { supabase } from "@/lib/supabase"; // ИМПОРТИРУЕМ SUPABASE
 
 const Index = () => {
   const [showContactModal, setShowContactModal] = useState(false);
@@ -38,7 +38,7 @@ const Index = () => {
     compliance: ''
   });
 
-  /*// ЗАГРУЗКА ДАННЫХ ИЗ SUPABASE
+  // ЗАГРУЗКА ДАННЫХ ИЗ SUPABASE
   useEffect(() => {
     loadInitialData();
     setupRealtimeSubscriptions();
@@ -132,7 +132,7 @@ const Index = () => {
       )
       .subscribe();
   };
-*/
+
   const handleUpdateTestimonials = (updatedTestimonials: any[]) => {
     setTestimonials(updatedTestimonials);
   };
