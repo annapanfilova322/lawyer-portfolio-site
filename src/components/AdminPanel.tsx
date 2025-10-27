@@ -20,12 +20,10 @@ interface Contacts {
   address: string;
 }
 
-interface Certificate {
-  name: string;
-  url: string;
+interface Certificates {
+  skolkovo: string;
+  compliance: string;
 }
-
-type Certificates = Certificate[];
 
 interface AdminPanelProps {
   testimonials: Testimonial[];
@@ -36,8 +34,8 @@ interface AdminPanelProps {
   onUpdateContacts: (contacts: Contacts) => void;
   contactsApiUrl: string;
   onRefreshContacts: () => void;
-  certificates: Certificate[];
-  onUpdateCertificates: (certificates: Certificate[]) => void;
+  certificates: Certificates;
+  onUpdateCertificates: (certificates: Certificates) => void;
   certificatesApiUrl: string;
   onRefreshCertificates: () => void;
 }
