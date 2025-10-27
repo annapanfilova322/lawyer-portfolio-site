@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 import AdminPanel from "@/components/AdminPanel";
 import { siteData } from "@/data";
+import { supabase } from "@/lib/supabase"; // ИМПОРТИРУЕМ SUPABASE
 
 const Index = () => {
   const [showContactModal, setShowContactModal] = useState(false);
@@ -23,9 +24,9 @@ const Index = () => {
     }
   ];
 
-  // ИСПОЛЬЗУЕМ ДАННЫЕ ИЗ siteData
-  const [testimonials, setTestimonials] = useState(siteData.testimonials);
-  const [loading, setLoading] = useState(false);
+  // ИСПОЛЬЗУЕМ ДАННЫЕ ИЗ SUPABASE
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [contacts, setContacts] = useState({
     phone: '+7 (999) 123-45-67',
     email: 'lawyer@example.ru',
@@ -33,16 +34,104 @@ const Index = () => {
   });
 
   const [certificates, setCertificates] = useState({
-    skolkovo: siteData.certificates[0]?.drive_link || '',
-    compliance: siteData.certificates[1]?.drive_link || ''
+    skolkovo: '',
+    compliance: ''
   });
 
-  // УБРАЛИ ВСЕ API_URL
-
+  // ЗАГРУЗКА ДАННЫХ ИЗ SUPABASE
   useEffect(() => {
-    // ДАННЫЕ УЖЕ ЗАГРУЖЕНЫ ИЗ siteData
-    setLoading(false);
+    loadInitialData();
+    setupRealtimeSubscriptions();
   }, []);
+
+  // ФУНКЦИЯ ЗАГРУЗКИ НАЧАЛЬНЫХ ДАННЫХ
+  const loadInitialData = async () => {
+    try {
+      setLoading(true);
+      
+      // Загружаем отзывы
+      const { data: testimonialsData, error: testimonialsError } = await supabase
+        .from('testimonials')
+        .select('*')
+        .eq('is_approved', true)
+        .order('sort_order');
+      
+      if (!testimonialsError && testimonialsData) {
+        setTestimonials(testimonialsData);
+      }
+
+      // Загружаем контакты
+      const { data: contactsData, error: contactsError } = await supabase
+        .from('contacts')
+        .select('*')
+        .single();
+      
+      if (!contactsError && contactsData) {
+        setContacts({
+          phone: contactsData.phone,
+          email: contactsData.email,
+          address: contactsData.address
+        });
+      }
+
+      // Загружаем сертификаты
+      const { data: certificatesData, error: certificatesError } = await supabase
+        .from('certificates')
+        .select('*')
+        .single();
+      
+      if (!certificatesError && certificatesData) {
+        setCertificates({
+          skolkovo: certificatesData.skolkovo_link || '',
+          compliance: certificatesData.compliance_link || ''
+        });
+      }
+
+    } catch (error) {
+      console.error('Ошибка загрузки данных:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // REAL-TIME ПОДПИСКИ
+  const setupRealtimeSubscriptions = () => {
+    // Подписка на отзывы
+    supabase
+      .channel('testimonials-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'testimonials' },
+        (payload) => {
+          console.log('Отзывы обновились!', payload);
+          loadInitialData(); // Перезагружаем данные
+        }
+      )
+      .subscribe();
+
+    // Подписка на контакты
+    supabase
+      .channel('contacts-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'contacts' },
+        (payload) => {
+          console.log('Контакты обновились!', payload);
+          loadInitialData(); // Перезагружаем данные
+        }
+      )
+      .subscribe();
+
+    // Подписка на сертификаты
+    supabase
+      .channel('certificates-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'certificates' },
+        (payload) => {
+          console.log('Сертификаты обновились!', payload);
+          loadInitialData(); // Перезагружаем данные
+        }
+      )
+      .subscribe();
+  };
 
   const handleUpdateTestimonials = (updatedTestimonials: any[]) => {
     setTestimonials(updatedTestimonials);
@@ -135,7 +224,11 @@ const Index = () => {
                 <p className="text-slate-500">Загрузка отзывов...</p>
               </div>
             ) : (
-              <TestimonialCarousel testimonials={testimonials} />
+              <TestimonialCarousel testimonials={testimonials.map(t => ({
+                id: t.id,
+                company: t.company_name,
+                drive_link: t.letter_link
+              }))} />
             )}
           </div>
         </div>
@@ -185,7 +278,6 @@ const Index = () => {
         </div>
       </footer>
 
-      {/* УБРАЛИ НЕНУЖНЫЕ ПАРАМЕТРЫ API */}
       <AdminPanel 
         testimonials={testimonials} 
         onUpdate={handleUpdateTestimonials}
@@ -225,10 +317,10 @@ const Index = () => {
                     Позвоните нам
                   </p>
                   <a 
-                    href="tel:+79991234567" 
+                    href={`tel:${contacts.phone}`} 
                     className="block text-3xl font-bold text-secondary hover:text-primary transition-colors"
                   >
-                    +7 (999) 123-45-67
+                    {contacts.phone}
                   </a>
                 </div>
 
@@ -239,10 +331,10 @@ const Index = () => {
                     Или напишите
                   </p>
                   <a 
-                    href="mailto:lawyer@example.ru" 
+                    href={`mailto:${contacts.email}`} 
                     className="block text-lg font-bold text-secondary hover:text-primary transition-colors break-all"
                   >
-                    lawyer@example.ru
+                    {contacts.email}
                   </a>
                 </div>
 
