@@ -10,12 +10,12 @@ jobs:
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4  # ← Обновили до v4
       
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4  # ← Обновили до v4
       with:
-        node-version: '20'  # ← ИЗМЕНИЛИ с 18 на 20!
+        node-version: '20'
         cache: 'npm'
         
     - name: Install dependencies
@@ -25,13 +25,13 @@ jobs:
       run: npm run build
       
     - name: Setup Pages
-      uses: actions/configure-pages@v2
+      uses: actions/configure-pages@v3  # ← Обновили до v3
       
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v1
+      uses: actions/upload-pages-artifact@v2  # ← Обновили до v2
       with:
         path: './dist'
         
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v1
+      uses: actions/deploy-pages@v2  # ← Обновили до v2
