@@ -7,11 +7,13 @@ import CertificatesEditForm from "@/components/admin/CertificatesEditForm";
 import TestimonialAddForm from "@/components/admin/TestimonialAddForm";
 import TestimonialList from "@/components/admin/TestimonialList";
 import { siteData } from "@/data";
+import { supabase } from "@/lib/supabase";
 
 interface Testimonial {
-  id?: number;
-  company: string;
-  letterUrl: string;
+  id?: string;
+  company_name: string;
+  letter_link: string;
+  sort_order?: number;
 }
 
 interface Contacts {
@@ -26,8 +28,8 @@ interface Certificates {
 }
 
 interface AdminPanelProps {
-  testimonials: Testimonial[];
-  onUpdate: (testimonials: Testimonial[]) => void;
+  testimonials: any[];
+  onUpdate: (testimonials: any[]) => void;
   contacts: Contacts;
   onUpdateContacts: (contacts: Contacts) => void;
   certificates: Certificates;
@@ -40,7 +42,7 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [newTestimonial, setNewTestimonial] = useState({ company: "", letterUrl: "" });
+  const [newTestimonial, setNewTestimonial] = useState({ company_name: "", letter_link: "" });
   const [loginError, setLoginError] = useState("");
   const [showContactsEdit, setShowContactsEdit] = useState(false);
   const [editedContacts, setEditedContacts] = useState(contacts);
@@ -49,21 +51,19 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [isBlocked, setIsBlocked] = useState(false);
   const [blockTime, setBlockTime] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  // 🔒 ЗАГРУЗКА СОХРАНЁННЫХ ДАННЫХ ПРИ ЗАПУСКЕ
   useEffect(() => {
     const handleOpenAdmin = () => {
       setIsOpen(true);
     };
 
-    // Проверяем блокировку
     const blockedUntil = localStorage.getItem('adminBlockedUntil');
     if (blockedUntil && Date.now() < parseInt(blockedUntil)) {
       setIsBlocked(true);
       setBlockTime(parseInt(blockedUntil) - Date.now());
     }
 
-    // Загружаем сохранённые попытки входа
     const savedAttempts = localStorage.getItem('loginAttempts');
     if (savedAttempts) {
       setLoginAttempts(parseInt(savedAttempts));
@@ -73,7 +73,6 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
     return () => window.removeEventListener('openAdminPanel', handleOpenAdmin);
   }, []);
 
-  // 🔒 ТАЙМЕР РАЗБЛОКИРОВКИ
   useEffect(() => {
     if (!isBlocked) return;
 
@@ -93,7 +92,6 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
     return () => clearInterval(timer);
   }, [isBlocked, blockTime]);
 
-  // 🔒 ПРОВЕРКА ПАРОЛЯ С ЗАЩИТОЙ
   const handleLogin = () => {
     if (isBlocked) {
       setLoginError(`Система заблокирована. Повторите через ${Math.ceil(blockTime / 1000 / 60)} минут`);
@@ -102,7 +100,6 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
 
     setLoginError("");
 
-    // 🔒 ПРОВЕРКА СТАТИЧНОГО ПАРОЛЯ
     if (password === siteData.adminPassword) {
       setIsAuthenticated(true);
       setPassword("");
@@ -114,7 +111,6 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
       localStorage.setItem('loginAttempts', attempts.toString());
 
       if (attempts >= 5) {
-        // Блокировка на 30 минут
         const blockUntil = Date.now() + 30 * 60 * 1000;
         setIsBlocked(true);
         setBlockTime(30 * 60 * 1000);
@@ -126,24 +122,39 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
     }
   };
 
-  // ДОБАВЛЕНИЕ ОТЗЫВА В ПАМЯТИ
-  const handlePublishTestimonial = () => {
-    if (!newTestimonial.company.trim()) {
+  const handlePublishTestimonial = async () => {
+    if (!newTestimonial.company_name.trim()) {
       alert("Пожалуйста, заполните название компании");
       return;
     }
 
-    const newTestimonialWithId: Testimonial = {
-      id: testimonials.length + 1,
-      company: newTestimonial.company,
-      letterUrl: newTestimonial.letterUrl
-    };
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('testimonials')
+        .insert([
+          {
+            company_name: newTestimonial.company_name,
+            letter_link: newTestimonial.letter_link,
+            sort_order: testimonials.length
+          }
+        ])
+        .select();
 
-    const updatedTestimonials = [...testimonials, newTestimonialWithId];
-    onUpdate(updatedTestimonials);
-    
-    setNewTestimonial({ company: "", letterUrl: "" });
-    setShowAddForm(false);
+      if (error) {
+        console.error('Ошибка добавления отзыва:', error);
+        alert('Ошибка при добавлении отзыва');
+      } else {
+        setNewTestimonial({ company_name: "", letter_link: "" });
+        setShowAddForm(false);
+        alert('Отзыв успешно добавлен!');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка при добавлении отзыва');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -154,21 +165,54 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
     setIsOpen(false);
   };
 
-  // УДАЛЕНИЕ ОТЗЫВА ИЗ ПАМЯТИ
-  const handleDeleteTestimonial = (id: number) => {
+  const handleDeleteTestimonial = async (id: string) => {
     if (!confirm("Вы уверены, что хотите удалить этот отзыв?")) return;
 
-    const updatedTestimonials = testimonials.filter(t => t.id !== id);
-    onUpdate(updatedTestimonials);
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('testimonials')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Ошибка удаления отзыва:', error);
+        alert('Ошибка при удалении отзыва');
+      } else {
+        alert('Отзыв успешно удален!');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка при удалении отзыва');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // ОБНОВЛЕНИЕ ОТЗЫВА В ПАМЯТИ
-  const handleUpdateTestimonial = (testimonial: Testimonial) => {
-    const updatedTestimonials = testimonials.map(t => 
-      t.id === testimonial.id ? testimonial : t
-    );
-    onUpdate(updatedTestimonials);
-    setEditingIndex(null);
+  const handleUpdateTestimonial = async (testimonial: Testimonial) => {
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('testimonials')
+        .update({
+          company_name: testimonial.company_name,
+          letter_link: testimonial.letter_link
+        })
+        .eq('id', testimonial.id);
+
+      if (error) {
+        console.error('Ошибка обновления отзыва:', error);
+        alert('Ошибка при обновлении отзыва');
+      } else {
+        setEditingIndex(null);
+        alert('Отзыв успешно обновлен!');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка при обновлении отзыва');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFieldChange = (index: number, field: string, value: string) => {
@@ -177,35 +221,117 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
     onUpdate(updated);
   };
 
-  // ПЕРЕМЕЩЕНИЕ ОТЗЫВОВ
-  const handleMoveUp = (index: number) => {
+  const handleMoveUp = async (index: number) => {
     if (index === 0) return;
     
-    const updated = [...testimonials];
-    [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
-    onUpdate(updated);
+    const testimonial = testimonials[index];
+    const prevTestimonial = testimonials[index - 1];
+    
+    setLoading(true);
+    try {
+      const { error: error1 } = await supabase
+        .from('testimonials')
+        .update({ sort_order: index - 1 })
+        .eq('id', testimonial.id);
+
+      const { error: error2 } = await supabase
+        .from('testimonials')
+        .update({ sort_order: index })
+        .eq('id', prevTestimonial.id);
+
+      if (error1 || error2) {
+        console.error('Ошибка перемещения:', error1 || error2);
+        alert('Ошибка при перемещении отзыва');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка при перемещении отзыва');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleMoveDown = (index: number) => {
+  const handleMoveDown = async (index: number) => {
     if (index === testimonials.length - 1) return;
     
-    const updated = [...testimonials];
-    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
-    onUpdate(updated);
+    const testimonial = testimonials[index];
+    const nextTestimonial = testimonials[index + 1];
+    
+    setLoading(true);
+    try {
+      const { error: error1 } = await supabase
+        .from('testimonials')
+        .update({ sort_order: index + 1 })
+        .eq('id', testimonial.id);
+
+      const { error: error2 } = await supabase
+        .from('testimonials')
+        .update({ sort_order: index })
+        .eq('id', nextTestimonial.id);
+
+      if (error1 || error2) {
+        console.error('Ошибка перемещения:', error1 || error2);
+        alert('Ошибка при перемещении отзыва');
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка при перемещении отзыва');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // СОХРАНЕНИЕ КОНТАКТОВ В ПАМЯТИ
-  const handleSaveContacts = () => {
-    onUpdateContacts(editedContacts);
-    setShowContactsEdit(false);
-    alert("Контактные данные обновлены");
+  const handleSaveContacts = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .update({
+          phone: editedContacts.phone,
+          email: editedContacts.email,
+          address: editedContacts.address
+        })
+        .eq('id', '69534138-4074-dd6e-b844-47286-d04e7bb');
+
+      if (error) {
+        console.error('Ошибка обновления контактов:', error);
+        alert('Ошибка при обновлении контактов');
+      } else {
+        setShowContactsEdit(false);
+        alert("Контактные данные обновлены");
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка при обновлении контактов');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // СОХРАНЕНИЕ СЕРТИФИКАТОВ В ПАМЯТИ
-  const handleSaveCertificates = () => {
-    onUpdateCertificates(editedCertificates);
-    setShowCertificatesEdit(false);
-    alert("Сертификаты обновлены");
+  const handleSaveCertificates = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('certificates')
+        .update({
+          skolkovo_link: editedCertificates.skolkovo,
+          compliance_link: editedCertificates.compliance
+        })
+        .eq('id', 'b1b5fc10-4c0a-4726-94d1-8930e9f38a25');
+
+      if (error) {
+        console.error('Ошибка обновления сертификатов:', error);
+        alert('Ошибка при обновлении сертификатов');
+      } else {
+        setShowCertificatesEdit(false);
+        alert("Сертификаты обновлены");
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка при обновлении сертификатов');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) {
@@ -260,6 +386,7 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
                 onFieldChange={handleFieldChange}
                 onMoveUp={handleMoveUp}
                 onMoveDown={handleMoveDown}
+                loading={loading}
               />
             </div>
           </>
@@ -269,6 +396,7 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
             setEditedContacts={setEditedContacts}
             onSave={handleSaveContacts}
             onCancel={() => setShowContactsEdit(false)}
+            loading={loading}
           />
         ) : showCertificatesEdit ? (
           <CertificatesEditForm
@@ -276,6 +404,7 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
             setEditedCertificates={setEditedCertificates}
             onSave={handleSaveCertificates}
             onCancel={() => setShowCertificatesEdit(false)}
+            loading={loading}
           />
         ) : (
           <TestimonialAddForm
@@ -283,6 +412,7 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
             setNewTestimonial={setNewTestimonial}
             onPublish={handlePublishTestimonial}
             onCancel={() => setShowAddForm(false)}
+            loading={loading}
           />
         )}
       </div>
