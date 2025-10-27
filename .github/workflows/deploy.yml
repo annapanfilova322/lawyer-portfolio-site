@@ -4,16 +4,21 @@ on:
   push:
     branches: [ main ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v4  # ← Обновили до v4
+      uses: actions/checkout@v4
       
     - name: Setup Node.js
-      uses: actions/setup-node@v4  # ← Обновили до v4
+      uses: actions/setup-node@v4
       with:
         node-version: '20'
         cache: 'npm'
@@ -25,13 +30,20 @@ jobs:
       run: npm run build
       
     - name: Setup Pages
-      uses: actions/configure-pages@v3  # ← Обновили до v3
+      uses: actions/configure-pages@v3
       
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2  # ← Обновили до v2
+      uses: actions/upload-pages-artifact@v2
       with:
-        path: './dist'
-        
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v2  # ← Обновили до v2
+        path: ./dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
