@@ -10,10 +10,11 @@
       "name": "Update certificates",
       "method": "PUT",
       "path": "/",
-      "body": {
-        "skolkovo": "https://example.com/skolkovo.pdf",
-        "compliance": "https://example.com/compliance.pdf"
-      },
+      "body": [
+        {"name": "Cert 1", "url": "https://example.com/1.pdf"},
+        {"name": "Cert 2", "url": "https://example.com/2.pdf"},
+        {"name": "", "url": ""}
+      ],
       "expectedStatus": 200
     }
   ]

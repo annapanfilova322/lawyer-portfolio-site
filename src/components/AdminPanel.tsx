@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 import LoginForm from "@/components/admin/LoginForm";
+import PasswordResetForm from "@/components/admin/PasswordResetForm";
 import AdminMenu from "@/components/admin/AdminMenu";
 import ContactsEditForm from "@/components/admin/ContactsEditForm";
 import CertificatesEditForm from "@/components/admin/CertificatesEditForm";
 import TestimonialAddForm from "@/components/admin/TestimonialAddForm";
 import TestimonialList from "@/components/admin/TestimonialList";
-import { siteData } from "@/data";
-// import { supabase } from "@/lib/supabase"; // ВРЕМЕННО ЗАКОММЕНТИРОВАНО
 
 interface Testimonial {
-  id?: string;
-  company_name: string;
-  letter_link: string;
-  sort_order?: number;
+  id?: number;
+  company: string;
+  letterUrl: string;
 }
 
 interface Contacts {
@@ -22,150 +20,241 @@ interface Contacts {
   address: string;
 }
 
-interface Certificates {
-  skolkovo: string;
-  compliance: string;
+interface Certificate {
+  name: string;
+  url: string;
 }
+
+type Certificates = Certificate[];
 
 interface AdminPanelProps {
-  testimonials: any[];
-  onUpdate: (testimonials: any[]) => void;
+  testimonials: Testimonial[];
+  onUpdate: (testimonials: Testimonial[]) => void;
+  apiUrl: string;
+  onRefresh: () => void;
   contacts: Contacts;
   onUpdateContacts: (contacts: Contacts) => void;
-  certificates: Certificates;
-  onUpdateCertificates: (certificates: Certificates) => void;
+  contactsApiUrl: string;
+  onRefreshContacts: () => void;
+  certificates: Certificate[];
+  onUpdateCertificates: (certificates: Certificate[]) => void;
+  certificatesApiUrl: string;
+  onRefreshCertificates: () => void;
 }
 
-const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certificates, onUpdateCertificates }: AdminPanelProps) => {
+const AUTH_API_URL = 'https://functions.poehali.dev/77abf354-4102-47a5-ad5e-d5290b704fcd';
+
+const AdminPanel = ({ testimonials, onUpdate, apiUrl, onRefresh, contacts, onUpdateContacts, contactsApiUrl, onRefreshContacts, certificates, onUpdateCertificates, certificatesApiUrl, onRefreshCertificates }: AdminPanelProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [newTestimonial, setNewTestimonial] = useState({ company_name: "", letter_link: "" });
+  const [newTestimonial, setNewTestimonial] = useState({ company: "", letterUrl: "" });
+  const [authToken, setAuthToken] = useState<string | null>(null);
   const [loginError, setLoginError] = useState("");
   const [showContactsEdit, setShowContactsEdit] = useState(false);
   const [editedContacts, setEditedContacts] = useState(contacts);
   const [showCertificatesEdit, setShowCertificatesEdit] = useState(false);
   const [editedCertificates, setEditedCertificates] = useState(certificates);
-  const [loginAttempts, setLoginAttempts] = useState(0);
-  const [isBlocked, setIsBlocked] = useState(false);
-  const [blockTime, setBlockTime] = useState(0);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [masterKey, setMasterKey] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordResetError, setPasswordResetError] = useState("");
+
+
 
   useEffect(() => {
     const handleOpenAdmin = () => {
       setIsOpen(true);
     };
 
-    const blockedUntil = localStorage.getItem('adminBlockedUntil');
-    if (blockedUntil && Date.now() < parseInt(blockedUntil)) {
-      setIsBlocked(true);
-      setBlockTime(parseInt(blockedUntil) - Date.now());
-    }
-
-    const savedAttempts = localStorage.getItem('loginAttempts');
-    if (savedAttempts) {
-      setLoginAttempts(parseInt(savedAttempts));
-    }
-
     window.addEventListener('openAdminPanel', handleOpenAdmin);
     return () => window.removeEventListener('openAdminPanel', handleOpenAdmin);
   }, []);
 
-  useEffect(() => {
-    if (!isBlocked) return;
+  const verifyToken = async (token: string) => {
+    try {
+      const response = await fetch(AUTH_API_URL, {
+        method: 'GET',
+        headers: {
+          'X-Auth-Token': token
+        }
+      });
 
-    const timer = setInterval(() => {
-      const timeLeft = blockTime - 1000;
-      setBlockTime(timeLeft);
-
-      if (timeLeft <= 0) {
-        setIsBlocked(false);
-        localStorage.removeItem('adminBlockedUntil');
-        localStorage.removeItem('loginAttempts');
-        setLoginAttempts(0);
-        clearInterval(timer);
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [isBlocked, blockTime]);
-
-  const handleLogin = () => {
-    if (isBlocked) {
-      setLoginError(`Система заблокирована. Повторите через ${Math.ceil(blockTime / 1000 / 60)} минут`);
-      return;
-    }
-
-    setLoginError("");
-
-    if (password === siteData.adminPassword) {
-      setIsAuthenticated(true);
-      setPassword("");
-      setLoginAttempts(0);
-      localStorage.removeItem('loginAttempts');
-    } else {
-      const attempts = loginAttempts + 1;
-      setLoginAttempts(attempts);
-      localStorage.setItem('loginAttempts', attempts.toString());
-
-      if (attempts >= 5) {
-        const blockUntil = Date.now() + 30 * 60 * 1000;
-        setIsBlocked(true);
-        setBlockTime(30 * 60 * 1000);
-        localStorage.setItem('adminBlockedUntil', blockUntil.toString());
-        setLoginError("Слишком много попыток. Система заблокирована на 30 минут.");
+      if (response.ok) {
+        setAuthToken(token);
+        setIsAuthenticated(true);
       } else {
-        setLoginError(`Неверный пароль. Осталось попыток: ${5 - attempts}`);
+        localStorage.removeItem('admin_token');
+        setAuthToken(null);
       }
+    } catch (error) {
+      console.error('Token verification error:', error);
+      localStorage.removeItem('admin_token');
+      setAuthToken(null);
     }
   };
 
-  // ВРЕМЕННЫЕ ЗАГЛУШКИ ВМЕСТО SUPABASE
+  const handleLogin = async () => {
+    setLoginError("");
+
+    try {
+      const response = await fetch(AUTH_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.token) {
+        setAuthToken(data.token);
+        setIsAuthenticated(true);
+        setPassword("");
+      } else if (response.status === 429) {
+        setLoginError(`Слишком много попыток. Повторите через ${Math.ceil(data.retry_after / 60)} минут.`);
+      } else {
+        setLoginError(data.error || "Неверный пароль");
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError("Ошибка подключения к серверу");
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    setPasswordResetError("");
+
+    if (newPassword.length < 6) {
+      setPasswordResetError("Пароль должен быть не менее 6 символов");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordResetError("Пароли не совпадают");
+      return;
+    }
+
+    try {
+      const response = await fetch(AUTH_API_URL, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          master_key: masterKey,
+          new_password: newPassword 
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Пароль успешно изменен");
+        setShowPasswordReset(false);
+        setMasterKey("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setPasswordResetError("");
+      } else if (response.status === 429) {
+        setPasswordResetError(`Слишком много попыток. Повторите через ${Math.ceil(data.retry_after / 60)} минут.`);
+      } else {
+        setPasswordResetError(data.error || "Ошибка смены пароля");
+      }
+    } catch (error) {
+      console.error('Password reset error:', error);
+      setPasswordResetError("Ошибка подключения к серверу");
+    }
+  };
+
   const handlePublishTestimonial = async () => {
-    if (!newTestimonial.company_name.trim()) {
+    if (!newTestimonial.company.trim()) {
       alert("Пожалуйста, заполните название компании");
       return;
     }
 
-    const newTestimonialWithId = {
-      id: Date.now().toString(),
-      company_name: newTestimonial.company_name,
-      letter_link: newTestimonial.letter_link,
-      sort_order: testimonials.length
-    };
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify({
+          company: newTestimonial.company,
+          letterUrl: newTestimonial.letterUrl
+        })
+      });
 
-    const updatedTestimonials = [...testimonials, newTestimonialWithId];
-    onUpdate(updatedTestimonials);
-    
-    setNewTestimonial({ company_name: "", letter_link: "" });
-    setShowAddForm(false);
-    alert('Отзыв успешно добавлен! (режим без Supabase)');
+      if (response.ok) {
+        setNewTestimonial({ company: "", letterUrl: "" });
+        setShowAddForm(false);
+        onRefresh();
+      } else {
+        alert("Ошибка при добавлении отзыва");
+      }
+    } catch (error) {
+      console.error("Error adding testimonial:", error);
+      alert("Ошибка при добавлении отзыва");
+    }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setAuthToken(null);
     setShowAddForm(false);
     setShowContactsEdit(false);
     setShowCertificatesEdit(false);
     setIsOpen(false);
+    localStorage.removeItem('admin_token');
   };
 
-  const handleDeleteTestimonial = async (id: string) => {
+  const handleDeleteTestimonial = async (id: number) => {
     if (!confirm("Вы уверены, что хотите удалить этот отзыв?")) return;
 
-    const updatedTestimonials = testimonials.filter(t => t.id !== id);
-    onUpdate(updatedTestimonials);
-    alert('Отзыв успешно удален! (режим без Supabase)');
+    try {
+      const response = await fetch(`${apiUrl}?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'X-Auth-Token': authToken || '',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        onRefresh();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Delete error:", errorData);
+        alert(`Ошибка при удалении отзыва: ${errorData.error || response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error deleting testimonial:", error);
+      alert("Ошибка при удалении отзыва");
+    }
   };
 
   const handleUpdateTestimonial = async (testimonial: Testimonial) => {
-    const updatedTestimonials = testimonials.map(t => 
-      t.id === testimonial.id ? testimonial : t
-    );
-    onUpdate(updatedTestimonials);
-    setEditingIndex(null);
-    alert('Отзыв успешно обновлен! (режим без Supabase)');
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify(testimonial)
+      });
+
+      if (response.ok) {
+        setEditingIndex(null);
+        onRefresh();
+      } else {
+        alert("Ошибка при обновлении отзыва");
+      }
+    } catch (error) {
+      console.error("Error updating testimonial:", error);
+      alert("Ошибка при обновлении отзыва");
+    }
   };
 
   const handleFieldChange = (index: number, field: string, value: string) => {
@@ -180,7 +269,20 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
     const updated = [...testimonials];
     [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
     onUpdate(updated);
-    alert('Отзыв перемещен вверх! (режим без Supabase)');
+    
+    try {
+      await fetch(apiUrl, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify(updated)
+      });
+    } catch (error) {
+      console.error("Error reordering testimonials:", error);
+      onRefresh();
+    }
   };
 
   const handleMoveDown = async (index: number) => {
@@ -189,19 +291,70 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
     const updated = [...testimonials];
     [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
     onUpdate(updated);
-    alert('Отзыв перемещен вниз! (режим без Supabase)');
+    
+    try {
+      await fetch(apiUrl, {
+        method: 'PATCH',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify(updated)
+      });
+    } catch (error) {
+      console.error("Error reordering testimonials:", error);
+      onRefresh();
+    }
   };
 
   const handleSaveContacts = async () => {
-    onUpdateContacts(editedContacts);
-    setShowContactsEdit(false);
-    alert("Контактные данные обновлены (режим без Supabase)");
+    try {
+      const response = await fetch(contactsApiUrl, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify(editedContacts)
+      });
+
+      if (response.ok) {
+        onUpdateContacts(editedContacts);
+        onRefreshContacts();
+        setShowContactsEdit(false);
+        alert("Контактные данные обновлены");
+      } else {
+        alert("Ошибка при обновлении контактов");
+      }
+    } catch (error) {
+      console.error("Error updating contacts:", error);
+      alert("Ошибка при обновлении контактов");
+    }
   };
 
   const handleSaveCertificates = async () => {
-    onUpdateCertificates(editedCertificates);
-    setShowCertificatesEdit(false);
-    alert("Сертификаты обновлены (режим без Supabase)");
+    try {
+      const response = await fetch(certificatesApiUrl, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Auth-Token': authToken || ''
+        },
+        body: JSON.stringify(editedCertificates)
+      });
+
+      if (response.ok) {
+        onUpdateCertificates(editedCertificates);
+        onRefreshCertificates();
+        setShowCertificatesEdit(false);
+        alert("Сертификаты обновлены");
+      } else {
+        alert("Ошибка при обновлении сертификатов");
+      }
+    } catch (error) {
+      console.error("Error updating certificates:", error);
+      alert("Ошибка при обновлении сертификатов");
+    }
   };
 
   if (!isOpen) {
@@ -222,14 +375,33 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
         </div>
 
         {!isAuthenticated ? (
-          <LoginForm
-            password={password}
-            setPassword={setPassword}
-            loginError={loginError}
-            onLogin={handleLogin}
-            isBlocked={isBlocked}
-            blockTime={blockTime}
-          />
+          showPasswordReset ? (
+            <PasswordResetForm
+              masterKey={masterKey}
+              setMasterKey={setMasterKey}
+              newPassword={newPassword}
+              setNewPassword={setNewPassword}
+              confirmPassword={confirmPassword}
+              setConfirmPassword={setConfirmPassword}
+              passwordResetError={passwordResetError}
+              onPasswordReset={handlePasswordReset}
+              onCancel={() => {
+                setShowPasswordReset(false);
+                setMasterKey("");
+                setNewPassword("");
+                setConfirmPassword("");
+                setPasswordResetError("");
+              }}
+            />
+          ) : (
+            <LoginForm
+              password={password}
+              setPassword={setPassword}
+              loginError={loginError}
+              onLogin={handleLogin}
+              onForgotPassword={() => setShowPasswordReset(true)}
+            />
+          )
         ) : !showAddForm && !showContactsEdit && !showCertificatesEdit ? (
           <>
             <AdminMenu

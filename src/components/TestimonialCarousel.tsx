@@ -1,5 +1,3 @@
-import { siteData } from "@/data";
-
 interface Testimonial {
   id?: number;
   company: string;
