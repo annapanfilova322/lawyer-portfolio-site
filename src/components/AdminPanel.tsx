@@ -396,7 +396,6 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
             setEditedContacts={setEditedContacts}
             onSave={handleSaveContacts}
             onCancel={() => setShowContactsEdit(false)}
-            loading={loading}
           />
         ) : showCertificatesEdit ? (
           <CertificatesEditForm
@@ -404,7 +403,6 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
             setEditedCertificates={setEditedCertificates}
             onSave={handleSaveCertificates}
             onCancel={() => setShowCertificatesEdit(false)}
-            loading={loading}
           />
         ) : (
           <TestimonialAddForm
@@ -412,7 +410,6 @@ const AdminPanel = ({ testimonials, onUpdate, contacts, onUpdateContacts, certif
             setNewTestimonial={setNewTestimonial}
             onPublish={handlePublishTestimonial}
             onCancel={() => setShowAddForm(false)}
-            loading={loading}
           />
         )}
       </div>
